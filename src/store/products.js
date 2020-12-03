@@ -12,9 +12,151 @@ export default {
                 title: 'Широкая цветовая гамма и огромное разнообразие балдежных шопперов. Компактные. Вместительные. Великолепные. То, что нужно для совмеменного ценителя постмодерна'
             }
         ],
+        wishlist: [],
         clothing:[
             {
                 id: 'asdwadwadasdaw',
+                title: 'Slayer Hell Awaits',
+                url: 'slayer-hell-awaits',
+                category: 'Футболки',
+                categoryURL: 'futbolki',
+                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
+                images:[
+                    {
+                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
+                    },
+                    {
+                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
+                    },
+                ],
+                colors: [
+                    {
+                        color: 'Зеленый',
+                        hex: '#0d7e1f',
+                        url: 'green'
+                    }
+                ],
+                care: 'Машинная стирка',
+                sizes:[
+                    {
+                        size: 'XSSSSL'
+                    },
+                    {
+                        size: 'XSKLK'
+                    }
+                ],
+                structure: {
+                    components:[
+                        {
+                            component: 'Лобковые волосы',
+                            url: 'lobkovie-volosi'
+                        },
+                        {
+                            component: 'Древесный гном',
+                            url: 'drevecni-gnom'
+                        }
+                    ],
+                    description: 'Древесный гном, Лобковые волосы'
+                },
+                price: 170,
+                discount: null
+            },
+            {
+                id: 'asdwadwsadasdaw',
+                title: 'Slayer Hell Awaits',
+                url: 'slayer-hell-awaits',
+                category: 'Футболки',
+                categoryURL: 'futbolki',
+                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
+                images:[
+                    {
+                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
+                    },
+                    {
+                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
+                    },
+                ],
+                colors: [
+                    {
+                        color: 'Зеленый',
+                        hex: '#0d7e1f',
+                        url: 'green'
+                    }
+                ],
+                care: 'Машинная стирка',
+                sizes:[
+                    {
+                        size: 'XSSSSL'
+                    },
+                    {
+                        size: 'XSKLK'
+                    }
+                ],
+                structure: {
+                    components:[
+                        {
+                            component: 'Лобковые волосы',
+                            url: 'lobkovie-volosi'
+                        },
+                        {
+                            component: 'Древесный гном',
+                            url: 'drevecni-gnom'
+                        }
+                    ],
+                    description: 'Древесный гном, Лобковые волосы'
+                },
+                price: 170,
+                discount: null
+            },
+            {
+                id: 'asdwadwadasssdaw',
+                title: 'Slayer Hell Awaits',
+                url: 'slayer-hell-awaits',
+                category: 'Футболки',
+                categoryURL: 'futbolki',
+                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
+                images:[
+                    {
+                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
+                    },
+                    {
+                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
+                    },
+                ],
+                colors: [
+                    {
+                        color: 'Зеленый',
+                        hex: '#0d7e1f',
+                        url: 'green'
+                    }
+                ],
+                care: 'Машинная стирка',
+                sizes:[
+                    {
+                        size: 'XSSSSL'
+                    },
+                    {
+                        size: 'XSKLK'
+                    }
+                ],
+                structure: {
+                    components:[
+                        {
+                            component: 'Лобковые волосы',
+                            url: 'lobkovie-volosi'
+                        },
+                        {
+                            component: 'Древесный гном',
+                            url: 'drevecni-gnom'
+                        }
+                    ],
+                    description: 'Древесный гном, Лобковые волосы'
+                },
+                price: 170,
+                discount: null
+            },
+            {
+                id: 'asdwadwsasdasdaw',
                 title: 'Slayer Hell Awaits',
                 url: 'slayer-hell-awaits',
                 category: 'Футболки',
@@ -310,6 +452,16 @@ export default {
         },
         SET_PRODUCT(state, payload){
             state.product = payload
+        },
+        ADD_TO_WISHLIST(state, payload){
+            state.wishlist.push(payload)
+        },
+        REMOVE_FROM_WISHLIST(state, payload){
+            for(let i = 0; i < state.wishlist.length; i++){
+                if (state.wishlist[i] === payload) {
+                    state.wishlist.splice(i, 1);
+                }
+            }
         }
     },
     actions: {
@@ -334,6 +486,9 @@ export default {
         }
     },
     getters:{
+        getWishList(state){
+          return state.wishlist
+        },
         getProduct: (state) =>{
             return state.product
         },
