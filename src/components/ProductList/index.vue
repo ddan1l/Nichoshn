@@ -12,7 +12,7 @@
       </div>
       <div class="col-8 pt-0">
         <list v-if="filteredCount>0" :products="necessaryProducts"></list>
-        <v-flex  v-else  style="width: 100%; height: 100%" class="flex align-center">
+        <v-flex v-else style="width: 100%; height: 100%" class="flex align-center">
           <h1 class="text-center">Ничего не найдено, попробуйте изменить ценовой диапазон</h1>
         </v-flex>
       </div>

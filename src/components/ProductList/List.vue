@@ -2,46 +2,36 @@
   <transition-group class="layout" style="flex-wrap: wrap"  name="product-animation" tag="div">
     <v-flex class="product-animation-item pl-2 mt-5 pr-2"  v-for="product in products" :key="product.id" xs4>
       <v-card elevation="0">
-        <router-link :to="{
-           path: $route.path +'/' + product.url,
-           params: {
-              productURL: product.url
-           }
-        }">
-          <v-img
-              style="cursor: pointer"
-              @mouseenter="showSecondImage($event, product.images)"
-              @mouseleave="showFirstImage($event, product.images)"
-              :src="product.images[0].imageURL"
-          ></v-img>
+        <router-link :to="{path: $route.path +'/' + product.url, params: {productURL: product.url}}">
+          <v-img min-height="240" style="cursor: pointer" @mouseenter="showSecondImage($event, product.images)" @mouseleave="showFirstImage($event, product.images)" :src="product.images[0].imageURL">
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular indeterminate color="black lighten-5"></v-progress-circular>
+              </v-row>
+            </template>
+          </v-img>
         </router-link>
         <div class="iconsContainer">
           <v-icon color="grey darken-2"  class="ml-4 mr-2 d-none d-lg-inline plugIcon" size="17">
             far fa-eye
           </v-icon>
-          <v-dialog  persistent :retain-focus="false" v-model="dialog">
+          <v-dialog persistent :retain-focus="false" v-model="dialog">
             <template v-slot:activator="{ on, attrs }">
-              <v-icon color="grey darken-2"  @click="modalImages=product.images; modalProduct = product; selectedSize = ''" v-bind="attrs" v-on="on" class="ml-4 mr-2 d-none d-lg-inline" size="17">
+              <v-icon color="grey darken-2" @click="modalImages=product.images; modalProduct = product; selectedSize = ''" v-bind="attrs" v-on="on" class="ml-4 mr-2 d-none d-lg-inline" size="17">
                 far fa-eye
               </v-icon>
             </template>
-
             <v-card tile width="900px" style="margin: 0 auto" elevation="0" >
               <v-container>
                 <v-layout row>
                   <div class="col-6">
                     <v-layout row>
                       <div class="d-none d-lg-block col-3">
-                        <v-img :class="{activeImage: carouselModel===i}" style="cursor: pointer" @click="carouselModel = i" v-for="(item, i) in modalProduct.images" :key="product.id + 'additionally'+ i" :src="item.imageURL">
-                        </v-img>
+                        <v-img :class="{activeImage: carouselModel===i}" style="cursor: pointer" @click="carouselModel = i" v-for="(item, i) in modalProduct.images" :key="product.id + 'additionally'+ i" :src="item.imageURL"></v-img>
                       </div>
                       <div class="col-lg-9 col-md-12">
                         <v-carousel show-arrows-on-hover hide-delimiters v-model="carouselModel">
-                          <v-carousel-item
-                              v-for="(item, index) in modalProduct.images"
-                              :key="product.id +'main' + index"
-                              :src="item.imageURL"
-                          ></v-carousel-item>
+                          <v-carousel-item v-for="(item, index) in modalProduct.images" :key="product.id +'main' + index" :src="item.imageURL"></v-carousel-item>
                         </v-carousel>
                       </div>
                     </v-layout>
@@ -87,7 +77,6 @@
                       fas fa-times
                     </v-icon>
                   </v-btn>
-
                 </v-layout>
               </v-container>
             </v-card>
@@ -96,7 +85,6 @@
             {{ wishlist.includes(product) ? 'fas fa-heart': 'far fa-heart'}}
           </v-icon>
         </div>
-
         <v-divider class="mx-4 mt-2 mb-2">''</v-divider>
         <router-link style="cursor: pointer" tag="div" to="/">
           <div class="product-title d-block text-center pb-0" >{{product.title}}</div>
