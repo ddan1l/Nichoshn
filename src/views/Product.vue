@@ -3,7 +3,6 @@
     <h1 v-if="processing">Загрузка...</h1>
     <h1 v-else-if="error">{{error}}</h1>
     <h1 v-else>{{product.description}}</h1>
-
   </div>
 </template>
 <script>

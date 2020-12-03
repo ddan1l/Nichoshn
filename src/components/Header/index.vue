@@ -51,7 +51,7 @@
 
 
       <template v-if="!isIdentify" class="hidden-sm-and-down red--text" v-slot:extension>
-        <v-container style="display: flex; justify-content: space-between; max-width: 750px">
+        <v-container style="display: flex; justify-content: space-between; max-width: min-content">
           <v-btn height="48" tile text to="/">
             Главная
           </v-btn>
@@ -157,12 +157,7 @@ export default {
         return this.$store.getters.getClothingCategories
       },
       isIdentify(){
-        if (this.$route.name === 'Identify'){
-          return true
-        }
-        else {
-          return false
-        }
+        return this.$route.name === 'Identify';
       },
       isAuthenticated(){
         return this.$store.getters.isAuthenticated
@@ -192,9 +187,10 @@ export default {
   left: 50%;
   transform: translateX(-50%);
 }
+/*
 /deep/ div.v-toolbar__extension {
   background-color: 0 0;
-}
+}*/
 
 /deep/ span.v-btn__content {
   font-weight: 300;
@@ -235,7 +231,9 @@ i{
 }
 header{
   z-index: 2;
-
+}
+.v-btn.v-btn--flat.v-btn--router.v-btn--text.v-btn--tile.theme--light.v-size--default, .v-btn.v-btn--flat.v-btn--text.v-btn--tile.theme--light.v-size--default {
+  margin: 0 10px;
 }
 .v-navigation-drawer.v-navigation-drawer--absolute.v-navigation-drawer--close.v-navigation-drawer--is-mobile.v-navigation-drawer--temporary.theme--light {
   z-index: 1 !important;

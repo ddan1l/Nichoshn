@@ -8,11 +8,11 @@
 </template>
 
 <script>
-import AppHeader from "@/components/AppHeader";
+import Header from "@/components/Header/index";
 export default {
   name: 'App',
   components: {
-    AppHeader
+    AppHeader: Header
   },
 };
 </script>
