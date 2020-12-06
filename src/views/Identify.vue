@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-card max-width="600" class="mx-auto pa-0">
+    <v-card elevation="0" tile outlined max-width="600" class="mx-auto pa-0">
       <v-tabs
           fixed-tabs
           color="black"
@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import SignIn from "@/views/SignIn";
-import SignUp from "@/views/SignUp";
+import SignIn from "@/components/SignIn";
+import SignUp from "@/components/SignUp";
 export default {
   name: "Identify",
 

@@ -302,7 +302,7 @@ export default {
             {
                 id: 'asdwadswasssssssdaw',
                 title: 'Жоппер Шоппер',
-                url: 'itachi-shopper',
+                url: 'itachi-shoppers',
                 category: 'Шопперы',
                 categoryURL: 'shoppers',
                 description: 'Международный преступник Итачи Учиха',

@@ -6,7 +6,9 @@ import vuetify from './plugins/vuetify';
 import VNus from "vue-nouislider-fork";
 import firebaseConfig from './config/firebase'
 import firebase from "firebase";
+import VueKonva from 'vue-konva'
 
+Vue.use(VueKonva)
 Vue.use(VNus)
 Vue.config.productionTip = false
 firebase.initializeApp(firebaseConfig);

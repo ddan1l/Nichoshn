@@ -2,13 +2,17 @@
   <div>
     <h1 v-if="processing">Загрузка...</h1>
     <h1 v-else-if="error">{{error}}</h1>
-    <h1 v-else>{{product.description}}</h1>
+    <product-preview v-else :product="product"></product-preview>
   </div>
 </template>
 <script>
+import ProductPreview from "@/components/ProductPreview";
 export default {
   props:{
     productURL: String
+  },
+  components:{
+    ProductPreview
   },
   name: "Product",
   created() {

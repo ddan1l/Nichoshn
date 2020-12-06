@@ -26,7 +26,7 @@
           <div class="product-category d-block text-center pb-0" >{{product.category}}</div>
           <div class="priceBlock" >
             <div class="product-price"
-             :style="{'text-decoration': product.discount ? 'line-through' : 'none',color: product.discount ? '#7f7f7f' : 'black',fontSize: product.discount ? '12px !important' : '14px !important'}">
+             :style="{'text-decoration': product.discount ? 'line-through' : 'none', color: product.discount ? '#7f7f7f' : 'black',fontSize: product.discount ? '12px !important' : '14px !important'}">
              {{product.price}} ₴ </div>
             <span class="ml-1" style="text-decoration: none;" v-if="product.discount">{{getDiscount(product.discount, product.price)}} ₴</span>
           </div>
@@ -39,7 +39,7 @@
       </v-card>
     </v-flex>
   </transition-group>
-  <v-dialog persistent :retain-focus="false" v-model="dialog">
+  <v-dialog persistent v-model="dialog">
     <v-card tile width="900px" style="margin: 0 auto" elevation="0" >
       <product-preview @close="dialog=!dialog" :is-modal="true" :product="modalProduct"></product-preview>
     </v-card>

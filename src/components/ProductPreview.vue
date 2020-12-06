@@ -30,13 +30,13 @@
     <div class="col-6">
       <div class="modal product-title d-block text-center pb-0 mt-5" >{{product.title}}</div>
       <div style="font-size: 14px" class="modal product-category d-block text-center pb-0 mt-1 black--text" >{{product.category}}</div>
-      <div class="priceBlock mt-2" >
+      <div class="priceBlock mt-4" >
         <div class="product-price"
              :style="{'text-decoration': product.discount ? 'line-through' : 'none',color: product.discount ? '#7f7f7f' : 'black',fontSize: product.discount ? '14px !important' : '16px !important'}">
           {{product.price}} ₴ </div>
         <span class="ml-1" style="text-decoration: none; font-size: 16px" v-if="product.discount">{{getDiscount(product.discount, product.price)}} ₴</span>
       </div>
-      <v-divider class="mx-4 mt-6 mb-4">''</v-divider>
+      <v-divider class="mx-4 mt-4 mb-4">''</v-divider>
       <div style="display: flex; justify-content: center">
         <div class="ml-2 mr-2" v-for="(item, index) in product.colors" :key="index">
           <div style="font-size: 14px">{{item.color}}</div>
@@ -46,7 +46,7 @@
       <v-divider class="mx-4 mt-6 mb-4">''</v-divider>
       <div style="font-size: 14px" class="modal product-category d-block text-center pb-0 mt-1 black--text" >Выберите размер</div>
       <div :class="{sizeError: sizeError }" style="display: flex; justify-content: center">
-        <div  :class="{selected: selectedSize===item.size}"
+        <div :class="{selected: selectedSize===item.size}"
               @click="selectedSize = item.size"
               class="pa-2 mt-3 mr-1 ml-1"
               v-for="item in product.sizes"
@@ -97,7 +97,7 @@ export default {
       if (this.selectedSize === null){
         this.sizeError = true
       }
-      else{
+      else if (this.isModal){
         this.closeModal()
       }
     },
@@ -109,10 +109,11 @@ export default {
     toWishlist(){
       if (this.wishlist.includes(this.product)){
        this.$store.commit('REMOVE_FROM_WISHLIST', this.product)
-       this.closeModal()
       }
       else{
         this.$store.commit('ADD_TO_WISHLIST', this.product)
+      }
+      if (this.isModal){
         this.closeModal()
       }
     }
@@ -127,5 +128,51 @@ export default {
 </script>
 
 <style scoped>
+.activeImage{
+  border: 1px solid #272727;
+  transform: scale(0.9);
+}
+.colorDisplay {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  margin: 5px auto 0;
+  position: relative;
+  border: 1px solid;
+}
+.sizeError{
+  color: red;
+  animation-name: sizeErrorAnim;
+  animation-iteration-count: 1;
+  animation-duration: 500ms;
+  animation-timing-function: ease-in-out;
+}
+@keyframes sizeErrorAnim {
+  0% {
+    transform: translateX(0px);
+  }
+  33% {
+    transform: translateX(-10px);
+  }
+  66%{
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+.priceBlock{
+  display: flex;
+  justify-content: center;
+  margin: 2px 0;
+}
+.priceBlock span{
+  font-size: 14px ;
+  font-weight: 300 !important;
+}
+
+.selected{
+  border: 1px solid black;
+}
 
 </style>

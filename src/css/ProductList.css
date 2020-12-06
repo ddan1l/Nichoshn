@@ -88,9 +88,6 @@
     font-size: 14px !important;
     font-weight: 300 !important;
 }
-.container {
-    max-width: none;
-}
 .priceBlock{
     display: flex;
     justify-content: center;

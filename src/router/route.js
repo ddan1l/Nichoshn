@@ -30,12 +30,12 @@ const routes = [
   {
     path: '/signin',
     name: 'SignIn',
-    component: () => import('../views/SignIn')
+    component: () => import('../components/SignIn')
   },
   {
     path: '/signup',
     name: 'SignUp',
-    component: () => import('../views/SignUp')
+    component: () => import('../components/SignUp')
   },
   {
     path: '/identify',
