@@ -2,8 +2,8 @@
   <v-sheet class=" mt-1 mb-8" outlined max-width="min-content">
     <v-slide-group v-model="model" class="pa-4" active-class="active" show-arrows>
       <v-slide-item v-for="(template, index) in templatesCategories" :key="index" v-slot="{active, toggle }">
-        <v-card outlined elevation="0" style="position: relative" :color="active ? undefined : 'grey lighten-4'" class=" ma-4 rounded-0 mb-10" height="400" width="300" @click="toggle">
-        <v-img style="width: 100%; height: 100%" :src="template.image">
+        <v-card  outlined elevation="0" style="position: relative" :color="active ? undefined : 'grey lighten-4'" class=" ma-4 rounded-0 mb-10" height="400" width="300" @click="toggle">
+        <v-img transition="scale-transition" origin="center center" style="width: 100%; height: 100%" :src="template.image">
           <template v-slot:placeholder>
             <v-row class="fill-height ma-0" align="center" justify="center">
               <v-progress-circular indeterminate color="black lighten-5"></v-progress-circular>
