@@ -1,3 +1,4 @@
+import cookie from 'vue-cookies'
 export default{
     state: {
         categoryTemplates:[
@@ -123,11 +124,24 @@ export default{
 
     mutations: {
         SET_CATEGORY_TEMPLATES(state, payload){
-            state.templatesCategories = payload
+            state.categoryTemplates = payload
         },
+        SET_CATEGORY_PATTERNS(state, payload){
+            state.categoryTemplates = payload
+        },
+        SET_CONFIGURATION(state, payload){
+            state.configuration = payload
+        }
+    },
+    actions:{
+        CONFIGURE({commit}, payload ){
+            payload.isConfigured = true
+            cookie.set('Configuration', JSON.stringify(payload))
+            commit('SET_CONFIGURATION', payload)
+        }
     },
     getters:{
-        getConfigurationState: (state) => state.configuration.isConfigured,
+        getConfiguration: (state) => state.configuration,
         getCategoryPatterns: (state) => state.categoryPatterns,
         getCategoryTemplates: (state) => state.categoryTemplates,
         getSizes: (state) => state.sizes,

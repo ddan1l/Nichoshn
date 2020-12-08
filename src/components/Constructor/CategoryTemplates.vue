@@ -27,19 +27,28 @@ export default {
   name: "TemplatesCategories",
   data(){
     return{
-      model: null
+      templatesModel: undefined
     }
   },
   computed:{
+    model:{
+      get(){
+        return this.templatesModel
+      },
+      set(val){
+        this.templatesModel = val
+        if (val !==undefined){
+          this.$emit('selected',  this.$store.getters.getCategoryTemplates[val])
+        }
+        else{
+          this.$emit('selected', null)
+        }
+      }
+    },
     templatesCategories(){
       return this.$store.getters.getCategoryTemplates
     }
   },
-  watch: {
-    model(newValue){
-        this.$emit('selected',  this.$store.getters.getCategoryTemplates[newValue])
-    }
-  }
 }
 </script>
 

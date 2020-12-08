@@ -28,7 +28,7 @@ export default{
                 })
                 .catch(function(error) {
                     commit('SET_PROCESSING', false)
-                    commit('SET_ERROR', error.message)
+                        commit('SET_ERROR', error.message)
             });
         },
         SIGNIN({commit}, payload){

@@ -31,15 +31,14 @@
       </v-stepper-step>
 
       <v-stepper-content step="3">
-        <CategoryPatterns v-if="selectedTemplate" :selectedIDTemplate="selectedTemplate.categoryId"/>
-        <v-btn :disabled="!selectedTemplate" outlined color="black" @click="stepperModel = 3">
+        <CategoryPatterns @patternSelected="selectedPattern = $event" v-if="selectedTemplate" :selectedIDTemplate="selectedTemplate.categoryId"/>
+        <v-btn :disabled="!selectedPattern" outlined color="black" @click="stepperModel = 3; configure()">
           Хорошо
         </v-btn>
-        <v-btn text @click="stepperModel = 2">
+        <v-btn class="ml-3" text @click="stepperModel = 2">
           Назад
         </v-btn>
       </v-stepper-content>
-
     </v-stepper>
    </v-container>
   </template>
@@ -56,7 +55,13 @@ export default {
   data(){
     return{
       stepperModel: 1,
-      selectedTemplate: undefined
+      selectedTemplate: 0,
+      selectedPattern: 0
+    }
+  },
+  methods:{
+    configure(){
+      this.$store.dispatch('CONFIGURE', this.selectedPattern)
     }
   }
 }
@@ -67,4 +72,9 @@ export default {
   box-shadow: none;
   border: thin solid rgba(0, 0, 0, 0.12);
 }
+
+.v-main__wrap.v-content__wrap{
+  margin-top: -40px !important;
+}
+
 </style>

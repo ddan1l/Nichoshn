@@ -7,7 +7,9 @@ import VNus from "vue-nouislider-fork";
 import firebaseConfig from './config/firebase'
 import firebase from "firebase";
 import VueKonva from 'vue-konva'
+import VueCookies from 'vue-cookies'
 
+Vue.use(VueCookies)
 Vue.use(VueKonva)
 Vue.use(VNus)
 Vue.config.productionTip = false

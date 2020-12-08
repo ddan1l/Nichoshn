@@ -4,7 +4,7 @@
         style="z-index: 2"
         absolute
         color="transparent"
-        :extended = "!isIdentify"
+        :extended = "!isHidden  "
         flat
         height="80"
         app>
@@ -16,7 +16,7 @@
         </h1>
         </router-link>
         <v-btn style="cursor: default; opacity: 0;"></v-btn>
-        <v-tooltip v-if="!isIdentify" bottom>
+        <v-tooltip v-if="!isHidden" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn x-small text fab v-bind="attrs" v-on="on" to="/profile" class="pa-5 float-right">
               <v-icon dark>
@@ -26,7 +26,7 @@
           </template>
           <span>Профиль</span>
         </v-tooltip>
-        <v-tooltip v-if="!isIdentify" bottom>
+        <v-tooltip v-if="!isHidden" bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn to="/wishlist" v-bind="attrs" v-on="on"  x-small  text fab class="pa-5 mr-2 ml-2 float-right">
               <v-icon dark>
@@ -37,7 +37,7 @@
           <span>Избранное</span>
         </v-tooltip>
 
-        <v-tooltip v-if="!isIdentify"  bottom>
+        <v-tooltip v-if="!isHidden"  bottom>
           <template  v-slot:activator="{ on, attrs }">
               <v-btn to="/basket" v-on="on" v-bind="attrs"  x-small text fab class="pa-5 float-right">
                 <v-icon dark>
@@ -50,7 +50,7 @@
         </div>
 
 
-      <template v-if="!isIdentify" class="hidden-sm-and-down red--text" v-slot:extension>
+      <template v-if="!isHidden" class="hidden-sm-and-down red--text" v-slot:extension>
         <v-container style="display: flex; justify-content: space-between; max-width: min-content">
           <v-btn height="48" tile text to="/">
             Главная
@@ -156,8 +156,8 @@ export default {
       clothingCategories(){
         return this.$store.getters.getClothingCategories
       },
-      isIdentify(){
-        return this.$route.name === 'Identify';
+      isHidden(){
+        return this.$route.name === 'Identify' || this.$route.name === 'Constructor';
       },
       isAuthenticated(){
         return this.$store.getters.isAuthenticated
