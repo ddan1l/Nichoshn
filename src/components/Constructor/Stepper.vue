@@ -68,6 +68,10 @@ export default {
 </script>
 
 <style scoped>
+/deep/.row.fill-height.ma-0.align-center.justify-center {
+  transform: translateX(-50%) !important;
+}
+
 .v-stepper.v-stepper--vertical.theme--light {
   box-shadow: none;
   border: thin solid rgba(0, 0, 0, 0.12);

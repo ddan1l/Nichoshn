@@ -136,9 +136,33 @@ export default{
     actions:{
         CONFIGURE({commit}, payload ){
             payload.isConfigured = true
-            cookie.set('Configuration', JSON.stringify(payload))
-            commit('SET_CONFIGURATION', payload)
-        }
+
+            getBlob(payload.front).then((blob) => {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = function() {
+                        payload.front = reader.result
+                        console.log( payload.front * 2)
+                        cookie.set('Configuration', JSON.stringify(payload))
+                        commit('SET_CONFIGURATION', payload)
+                    }
+            })
+            getBlob(payload.back).then((blob) => {
+                let reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function() {
+                    payload.back = reader.result
+                    cookie.set('Configuration', JSON.stringify(payload))
+                    commit('SET_CONFIGURATION', payload)
+                }
+            })
+
+          async function getBlob(url){
+              const response = await  fetch(url)
+              return await response.blob()
+          }
+        },
+
     },
     getters:{
         getConfiguration: (state) => state.configuration,
