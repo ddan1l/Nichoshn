@@ -5,6 +5,7 @@
                  @dragend="handleDragend"
                  @mousedown="handleStageMouseDown"
                  @touchstart="handleStageMouseDown"
+                 @click="stateChanged"
                  ref="stage" :config="configKonva">
           <v-layer ref="layer">
             <v-image ref="backgroundImage" :config="configBackgroundImage"/>
@@ -32,23 +33,26 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <ControlPanel :layers="layers" @refreshLayers="layers=$event"/>
+        <ControlPanel v-if="mounted"  :layers="layers" @refreshLayers="layers=$event"/>
       </div>
     </v-card>
 </template>
 
 <script>
 import ControlPanel from "@/components/Constructor/ControlPanel";
+
 export default {
   name: "Side",
-  props:{
-    image: String
+  props: {
+    image: String,
+    side: String
   },
   components: {
     ControlPanel
   },
-  data(){
+  data() {
     return {
+      config: {},
       showMenu: false,
       x: 0,
       y: 0,
@@ -57,6 +61,7 @@ export default {
         width: 0,
         height: 0
       },
+      mounted: false,
       backgroundImage: new Image(),
       backgroundPosition: 0,
       center: 0,
@@ -72,7 +77,31 @@ export default {
     }
   },
   methods: {
-    show (e) {
+    stateChanged() {
+      let tempLayers = []
+      for (const value of Object.entries(this.$refs.layer.getNode().children)) {
+        if (value[1].attrs !== undefined) {
+          if (Object.prototype.hasOwnProperty.call(value[1].attrs, 'name')) {
+            tempLayers.push(value[1].attrs)
+          }
+        }
+      }
+      if (tempLayers.length !== 0) {
+        tempLayers = JSON.parse(JSON.stringify(tempLayers))
+        for (let tempLayer of tempLayers) {
+          for (let layer of this.layers) {
+            if (layer.name === tempLayer.name) {
+              tempLayer.base64 = layer.base64
+            }
+          }
+        }
+        let side = this.side
+        localStorage.setItem(side, JSON.stringify({
+          side: tempLayers
+        }))
+      }
+    },
+    show(e) {
       e.evt.preventDefault()
       this.showMenu = false
       this.x = e.evt.clientX
@@ -81,43 +110,42 @@ export default {
         this.showMenu = true
       })
     },
-    layerConfig(item){
+    layerConfig(item) {
         let aspectRatio = item.image.width / item.image.height
         return {
           id: item.id,
-          x: 300,
-          y: 350,
+          x: item.x,
+          y: item.y,
+          scaleX: item.scaleX,
+          scaleY: item.scaleY,
+          skewX: item.skewX,
+          skewY: item.skewY,
+          fileName: item.fileName,
           width: 170 * aspectRatio,
           name: item.name,
           height: 170,
           image: item.image,
           draggable: true,
-          visible: item.isVisible,
+          visible: item.visible
         }
     },
-    grabCursor(){
+    grabCursor() {
       document.body.style.cursor = 'grab'
     },
-    defaultCursor(){
+    defaultCursor() {
       document.body.style.cursor = 'default'
     },
-    deleteLayer(){
+    deleteLayer() {
       const item = this.layers.find(i => i.name === this.selectedShapeName);
-      if (item){
+      if (item) {
         const index = this.layers.indexOf(item);
         if (index > -1) {
           this.layers.splice(index, 1);
-          this.selectedShapeName =''
+          this.selectedShapeName = ''
           this.updateTransformer()
         }
       }
-    },
-    getImage(layer){
-      const image = new Image();
-      image.src = layer.image
-      image.onload = () => {
-        return image
-      };
+      this.stateChanged()
     },
     handleDragstart(e) {
       document.body.style.cursor = 'grabbing'
@@ -128,6 +156,7 @@ export default {
       this.layers.push(item);
     },
     handleDragend() {
+      this.stateChanged()
       document.body.style.cursor = 'grab'
     },
     handleTransformEnd(e) {
@@ -155,8 +184,7 @@ export default {
       const layer = this.layers.find((l) => l.name === name);
       if (layer) {
         this.selectedShapeName = name;
-      }
-      else {
+      } else {
         this.selectedShapeName = '';
       }
       this.updateTransformer();
@@ -164,22 +192,21 @@ export default {
     updateTransformer() {
       const transformerNode = this.$refs.transformer.getNode();
       const stage = transformerNode.getStage();
-      const { selectedShapeName } = this;
+      const {selectedShapeName} = this;
       const selectedNode = stage.findOne('.' + selectedShapeName);
       if (selectedNode === transformerNode.node()) {
         return;
       }
       if (selectedNode) {
         transformerNode.nodes([selectedNode]);
-      }
-      else {
+      } else {
         transformerNode.nodes([]);
       }
       transformerNode.getLayer().batchDraw();
     },
   },
-  computed:{
-    configBackgroundImage(){
+  computed: {
+    configBackgroundImage() {
       return {
         x: 0,
         shadowColor: 'black',
@@ -190,15 +217,29 @@ export default {
     }
   },
   mounted() {
+    if (localStorage.getItem(this.side)) {
+      let layers = localStorage.getItem(this.side)
+      let temp = []
+      JSON.parse(layers).side.forEach(layer =>{
+        let image = new Image()
+        image.onload = () => {
+          layer.image = image
+          temp.push(layer)
+        }
+        image.src = layer.base64
+      })
+     this.layers = temp
+    }
     this.configKonva.width = this.$refs.drawingArea.offsetWidth
     this.configKonva.height = 700
-    this.center = this.configKonva.width/2
+    this.center = this.configKonva.width / 2
     const image = new Image();
     image.src = this.image
     image.onload = () => {
       this.backgroundImage = image;
-      this.$refs.backgroundImage.getNode().x(this.center - image.width/2)
+      this.$refs.backgroundImage.getNode().x(this.center - image.width / 2)
     };
+    this.mounted = true
   },
 }
 </script>

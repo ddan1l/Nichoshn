@@ -11,7 +11,7 @@
           <v-tab-item v-for="item in items" :key="item.tab">
             <v-card flat>
               <keep-alive>
-                <component :image="item.image" v-bind:is="item.content"></component>
+                <component :side="item.side" :image="item.image" v-bind:is="item.content"></component>
               </keep-alive>
             </v-card>
           </v-tab-item>
@@ -41,6 +41,7 @@ export default {
             {
               tab: 'Передняя сторона',
               image: this.configuration.front,
+              side: 'front',
               content: Side
             },
         )
@@ -50,6 +51,7 @@ export default {
             {
               tab: 'Задняя сторона',
               image: this.configuration.back,
+              side: 'back',
               content: Side
             },
         )
@@ -61,10 +63,10 @@ export default {
     },
   },
 
-  created() {
-    if (this.$cookies.isKey('Configuration'))
+  mounted() {
+    if (localStorage.Configuration)
     {
-      this.$store.dispatch('CONFIGURE', this.$cookies.get('Configuration'))
+      this.$store.dispatch('CONFIGURE', JSON.parse(localStorage.Configuration))
     }
   }
 }
@@ -85,16 +87,4 @@ export default {
   width: 50% !important;
   max-width: none;
 }
-/deep/.v-treeview-node__root {
-  margin-left: -15px !important;
-}
-/deep/.v-treeview-node__level {
-  width: 0;
-}
-/deep/.v-treeview-node__children {
-  width: 100%;
-  position: absolute;
-  left: 15px;
-}
-
 </style>

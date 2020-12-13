@@ -1,4 +1,3 @@
-import cookie from 'vue-cookies'
 export default{
     state: {
         categoryTemplates:[
@@ -134,35 +133,40 @@ export default{
         }
     },
     actions:{
+        RECONFIGURE({commit}, payload ){
+            payload.isConfigured = false
+            localStorage.removeItem('Configuration')
+            localStorage.removeItem('front')
+            localStorage.removeItem('back')
+            commit('SET_CONFIGURATION', payload)
+        },
         CONFIGURE({commit}, payload ){
             payload.isConfigured = true
-
             getBlob(payload.front).then((blob) => {
-                    let reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = function() {
-                        payload.front = reader.result
-                        console.log( payload.front * 2)
-                        cookie.set('Configuration', JSON.stringify(payload))
-                        commit('SET_CONFIGURATION', payload)
-                    }
+                let reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = function() {
+                    payload.front = reader.result
+                    localStorage.Configuration = JSON.stringify(payload)
+                    commit('SET_CONFIGURATION', payload)
+
+                }
             })
             getBlob(payload.back).then((blob) => {
                 let reader = new FileReader();
                 reader.readAsDataURL(blob);
                 reader.onloadend = function() {
                     payload.back = reader.result
-                    cookie.set('Configuration', JSON.stringify(payload))
+                    localStorage.Configuration = JSON.stringify(payload)
                     commit('SET_CONFIGURATION', payload)
                 }
             })
 
           async function getBlob(url){
-              const response = await  fetch(url)
+              const response = await fetch(url)
               return await response.blob()
           }
         },
-
     },
     getters:{
         getConfiguration: (state) => state.configuration,

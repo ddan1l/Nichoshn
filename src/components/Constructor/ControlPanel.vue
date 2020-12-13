@@ -7,7 +7,7 @@
         </v-list-item-icon>
         <v-list-item-title>Сохранить</v-list-item-title>
       </v-list-item>
-      <v-list-item link>
+      <v-list-item @click="reconfigure" link>
         <v-list-item-icon>
           <v-icon size="22">fas fa-reply</v-icon>
         </v-list-item-icon>
@@ -78,14 +78,14 @@
                              aria-hidden="true" class="list-group-item"
                              v-for="(layer, index) in layers" :key="index">
                   <v-list-item-icon>
-                    <v-icon style="margin-left: 2px" @click="revertVisibility(layer)" size="18">{{layer.isVisible? 'far fa-eye' : 'far fa-eye-slash'}}</v-icon>
+                    <v-icon style="margin-left: 2px" @click="revertVisibility(layer)" size="18">{{layer.visible? 'far fa-eye' : 'far fa-eye-slash'}}</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
                     <v-list-item-title>{{layer.fileName}}</v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-icon>
                     <v-avatar style="margin-top: 2px" size="20" color="transparent">
-                      <v-img :src="layer.image.src"/>
+                      <v-img :src="layer.image"/>
                     </v-avatar>
                   </v-list-item-icon>
                 </v-list-item>
@@ -117,7 +117,13 @@ export default {
     }
   },
   methods:{
+    reconfigure(){
+      this.$store.dispatch('RECONFIGURE', {})
+    },
     addFile(){
+      let min = 0
+      let max = 100000
+      let unique = Math.floor(Math.random() * (max - min + 1) ) + min
       this.files.forEach(file =>{
         new Promise(resolve => {
           let reader = new FileReader()
@@ -127,25 +133,30 @@ export default {
           reader.readAsDataURL(file)
         })
         .then((base64)=>{
-          const image = new Image();
-          image.src = base64.toString()
+          let image = new Image();
           image.onload = () => {
             this.layers.push({
-              scale: 1,
-              id: this.imagesCount,
-              name: 'layer' + this.imagesCount,
-              fileName: file.name,
-              image: image,
-              isVisible: true
+                x: 300,
+                y: 350,
+                scaleX: 1,
+                scaleY: 1,
+                skewX: 0,
+                skewY: 0,
+                id: unique,
+                name: 'layer' + unique,
+                fileName: file.name,
+                base64: base64,
+                image: image,
+                visible: true
             })
-            this.imagesCount++
           }
-
+          image.src = base64.toString();
         })
       })
+      this.$emit('refreshLayers', this.layers)
     },
     revertVisibility(item){
-      item.isVisible = ! item.isVisible
+      item.visible = !item.visible
     }
   },
   computed:{
@@ -159,9 +170,6 @@ export default {
     },
   },
   watch:{
-    activeItem(){
-      this.$emit('refreshActive', this.activeItem)
-    },
     layers:{
       deep: true,
       handler(){
