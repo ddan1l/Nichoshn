@@ -1,5 +1,5 @@
  <template>
-   <v-container class="mt-4">
+   <v-container :class="animationClass"  class="mt-4">
     <v-stepper v-model="stepperModel" vertical>
       <v-stepper-step color="black" :complete="stepperModel > 1" step="1">
          О констукторе
@@ -32,7 +32,7 @@
 
       <v-stepper-content step="3">
         <CategoryPatterns @patternSelected="selectedPattern = $event" v-if="selectedTemplate" :selectedIDTemplate="selectedTemplate.categoryId"/>
-        <v-btn :disabled="!selectedPattern" outlined color="black" @click="stepperModel = 3; configure()">
+        <v-btn :disabled="!selectedPattern" outlined color="black" @click="configure()">
           Хорошо
         </v-btn>
         <v-btn class="ml-3" text @click="stepperModel = 2">
@@ -54,6 +54,7 @@ export default {
   },
   data(){
     return{
+      animationClass: 'animate__animated animate__zoomIn',
       stepperModel: 1,
       selectedTemplate: 0,
       selectedPattern: 0
@@ -61,7 +62,9 @@ export default {
   },
   methods:{
     configure(){
+      this.animationClass = 'animate__animated animate__zoomOut'
       this.$store.dispatch('CONFIGURE', this.selectedPattern)
+      this.$emit('configure')
     }
   }
 }

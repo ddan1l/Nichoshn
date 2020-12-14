@@ -1,23 +1,23 @@
 <template>
   <v-navigation-drawer expand-on-hover permanent absolute >
     <v-list nav dense>
-      <v-list-item link>
+      <v-list-item @click="$emit('save')" link>
         <v-list-item-icon>
           <v-icon style="width: 24px">$download</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Сохранить</v-list-item-title>
       </v-list-item>
-      <v-list-item @click="reconfigure" link>
+      <v-list-item @click="$emit('reconfigure')" link>
         <v-list-item-icon>
           <v-icon size="22">fas fa-reply</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Изменить шаблон</v-list-item-title>
       </v-list-item>
-      <v-list-item link>
+      <v-list-item  @click="$emit('order')" link>
         <v-list-item-icon>
           <v-icon size="22">far fa-handshake</v-icon>
         </v-list-item-icon>
-        <v-list-item-title class="purchase">Оформить заказ</v-list-item-title>
+        <v-list-item-title  class="purchase">Оформить заказ</v-list-item-title>
       </v-list-item>
     </v-list>
     <v-divider></v-divider>
@@ -25,7 +25,7 @@
       <label>
             <span aria-hidden="true">
               <v-list-item link>
-              <v-list-item-icon >
+              <v-list-item-icon>
                 <v-icon style="width: 24px">far fa-file-image</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Добавить картинку</v-list-item-title>
@@ -33,18 +33,6 @@
             </span>
         <v-file-input accept="image/png, image/jpeg, image/bmp" v-model="files" multiple @change="addFile()" class="d-none" type="file" style="display:none"></v-file-input>
       </label>
-      <!-- <v-list-item link>
-        <v-list-item-icon>
-          <v-icon>$arrows</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Переместить </v-list-item-title>
-      </v-list-item>
-      <v-list-item link>
-        <v-list-item-icon>
-          <v-icon>fa-eraser</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Ластик</v-list-item-title>
-      </v-list-item>-->
     </v-list>
     <v-divider> </v-divider>
     <v-list nav dense>
@@ -61,8 +49,7 @@
             </v-list-item>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <h2 v-if="layers.length===0" class="addPicture">Добавьте изображения!</h2>
-            <v-list flat v-else>
+            <v-list flat >
                 <draggable
                     class="list-group"
                     tag="div"
@@ -85,7 +72,7 @@
                   </v-list-item-content>
                   <v-list-item-icon>
                     <v-avatar style="margin-top: 2px" size="20" color="transparent">
-                      <v-img :src="layer.image"/>
+                      <v-img :src="layer.base64"/>
                     </v-avatar>
                   </v-list-item-icon>
                 </v-list-item>
@@ -117,9 +104,6 @@ export default {
     }
   },
   methods:{
-    reconfigure(){
-      this.$store.dispatch('RECONFIGURE', {})
-    },
     addFile(){
       let min = 0
       let max = 100000
@@ -134,6 +118,7 @@ export default {
         })
         .then((base64)=>{
           let image = new Image();
+          image.setAttribute('crossOrigin', 'anonymous');
           image.onload = () => {
             this.layers.push({
                 x: 300,
@@ -169,6 +154,7 @@ export default {
       };
     },
   },
+
   watch:{
     layers:{
       deep: true,
@@ -235,6 +221,11 @@ export default {
   text-align: center;
   margin: 10px 0;
   font-size: 16px;
+}
+.v-expansion-panel {
+  border-radius: 0 !important;
+  border-top: none;
+  border-left: none;
 }
 
 </style>

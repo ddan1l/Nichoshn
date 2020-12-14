@@ -1,11 +1,47 @@
 <template>
-    <v-card min-height="650">
+    <v-card class="drawingCard" min-height="650">
+      <v-dialog v-model="authDialog" persistent max-width="280">
+        <v-card>
+          <v-card-title class="headline">
+            Зарегистируйтесь
+          </v-card-title>
+            <v-card-text>
+              После регистрации вы получите возможности сохранять ваши шаблоны констуктора, корзину, избранные покупки, открывать их на любом устройсте и многое другое.
+            </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="black darken-1" text @click="authDialog = false">
+              Хорошо
+            </v-btn>
+            <v-btn color="grey darken-1" text @click="authDialog = false">
+              Позже
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-menu
+          v-model="deleteMenu"
+          :position-x="x"
+          :position-y="y"
+          absolute
+          offset-y
+      >
+        <v-list class="py-0">
+          <v-list-item @click="deleteLayer" :ripple="true">
+            <v-list-item-title>Удалить</v-list-item-title>
+            <v-list-item-icon>
+              <v-icon size="18">far fa-trash-alt</v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <div ref="drawingArea">
         <v-stage @dragstart="handleDragstart"
                  @dragend="handleDragend"
                  @mousedown="handleStageMouseDown"
                  @touchstart="handleStageMouseDown"
                  @click="stateChanged"
+                 @contextmenu="(e)=>e.evt.preventDefault()"
                  ref="stage" :config="configKonva">
           <v-layer ref="layer">
             <v-image ref="backgroundImage" :config="configBackgroundImage"/>
@@ -17,23 +53,7 @@
           <v-transformer :config="transformerConfig" ref="transformer" />
           </v-layer>
         </v-stage>
-        <v-menu
-            v-model="showMenu"
-            :position-x="x"
-            :position-y="y"
-            absolute
-            offset-y
-        >
-          <v-list class="py-0">
-            <v-list-item @click="deleteLayer" :ripple="true">
-                <v-list-item-title>Удалить</v-list-item-title>
-                <v-list-item-icon>
-                  <v-icon size="18">far fa-trash-alt</v-icon>
-                </v-list-item-icon>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <ControlPanel v-if="mounted"  :layers="layers" @refreshLayers="layers=$event"/>
+        <ControlPanel @order="$emit('order')" @save="save()" @reconfigure="$emit('reconfigure')" v-if="mounted" :layers="layers" @refreshLayers="layers=$event"/>
       </div>
     </v-card>
 </template>
@@ -44,6 +64,7 @@ import ControlPanel from "@/components/Constructor/ControlPanel";
 export default {
   name: "Side",
   props: {
+    saveDataURL: Number,
     image: String,
     side: String
   },
@@ -52,8 +73,8 @@ export default {
   },
   data() {
     return {
-      config: {},
-      showMenu: false,
+      authDialog: false,
+      deleteMenu: false,
       x: 0,
       y: 0,
       selectedShapeName: '',
@@ -77,6 +98,11 @@ export default {
     }
   },
   methods: {
+    save(){
+      if (!this.isAuthenticated){
+        this.authDialog = true
+      }
+    },
     stateChanged() {
       let tempLayers = []
       for (const value of Object.entries(this.$refs.layer.getNode().children)) {
@@ -95,19 +121,19 @@ export default {
             }
           }
         }
-        let side = this.side
-        localStorage.setItem(side, JSON.stringify({
-          side: tempLayers
-        }))
+        this.$store.dispatch('SAVE_SIDE', {
+          side: this.side,
+          layers: tempLayers
+        })
       }
     },
     show(e) {
       e.evt.preventDefault()
-      this.showMenu = false
+      this.deleteMenu = false
       this.x = e.evt.clientX
       this.y = e.evt.clientY
       this.$nextTick(() => {
-        this.showMenu = true
+        this.deleteMenu = true
       })
     },
     layerConfig(item) {
@@ -206,19 +232,23 @@ export default {
     },
   },
   computed: {
+    isAuthenticated(){
+      return this.$store.getters.isAuthenticated
+    },
     configBackgroundImage() {
       return {
         x: 0,
-        shadowColor: 'black',
-        shadowBlur: 15,
-        shadowOpacity: 0.2,
+        shadowColor: 'gray',
+        shadowBlur: 5,
+        shadowOpacity: 0.5,
         image: this.backgroundImage,
       }
     }
   },
   mounted() {
-    if (localStorage.getItem(this.side)) {
-      let layers = localStorage.getItem(this.side)
+    this.$emit('loaded')
+    if (localStorage.getItem(this.side + "JSON")) {
+      let layers = localStorage.getItem(this.side + "JSON")
       let temp = []
       JSON.parse(layers).side.forEach(layer =>{
         let image = new Image()
@@ -231,7 +261,7 @@ export default {
      this.layers = temp
     }
     this.configKonva.width = this.$refs.drawingArea.offsetWidth
-    this.configKonva.height = 700
+    this.configKonva.height = 680
     this.center = this.configKonva.width / 2
     const image = new Image();
     image.src = this.image
@@ -241,6 +271,15 @@ export default {
     };
     this.mounted = true
   },
+  watch: {
+    saveDataURL(){
+      this.selectedShapeName = ''
+       this.updateTransformer()
+        this.$store.dispatch('SAVE_DATA_URL', {
+          image: this.$refs.stage.getStage().toDataURL()
+        })
+    }
+  }
 }
 </script>
 
@@ -255,6 +294,7 @@ export default {
 .purchase{
   font-weight: 500 !important;
 }
+
 /deep/.background > .v-image__image.v-image__image--cover {
   filter: drop-shadow(0px 5px 5px #00000024);
 }
@@ -264,7 +304,7 @@ export default {
 .v-navigation-drawer.v-navigation-drawer--absolute.v-navigation-drawer--open.theme--light {
   box-shadow: 5px 0 5px 0 rgba(235, 235, 235, 0.75);
 }
-.v-card.v-sheet.theme--light {
+.drawingCard.v-card.v-sheet.theme--light {
   background: #fbfbfb;
   background-image: linear-gradient(rgba(229, 229, 229, 0.7) .1em, transparent .1em), linear-gradient(90deg, rgba(229, 229, 229, 0.7) .1em, transparent .1em);
   background-size: 2.5em 2.5em;

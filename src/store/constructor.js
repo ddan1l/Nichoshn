@@ -119,6 +119,7 @@ export default{
         configuration: {
             isConfigured: false,
         },
+        dataUrlSides: []
     },
 
     mutations: {
@@ -130,7 +131,13 @@ export default{
         },
         SET_CONFIGURATION(state, payload){
             state.configuration = payload
-        }
+        },
+        ADD_DATA_URL_SIDES(state, payload){
+            state.dataUrlSides.push(payload)
+        },
+        REMOVE_DATA_URL_SIDES(state){
+            state.dataUrlSides = []
+        },
     },
     actions:{
         RECONFIGURE({commit}, payload ){
@@ -139,6 +146,15 @@ export default{
             localStorage.removeItem('front')
             localStorage.removeItem('back')
             commit('SET_CONFIGURATION', payload)
+        },
+        // eslint-disable-next-line no-unused-vars
+        SAVE_SIDE({commit}, payload){
+            localStorage.setItem(payload.side + "JSON", JSON.stringify({
+                side: payload.layers
+            }))
+        },
+        SAVE_DATA_URL({commit}, payload){
+            commit('ADD_DATA_URL_SIDES',  payload.image)
         },
         CONFIGURE({commit}, payload ){
             payload.isConfigured = true
@@ -172,7 +188,7 @@ export default{
         getConfiguration: (state) => state.configuration,
         getCategoryPatterns: (state) => state.categoryPatterns,
         getCategoryTemplates: (state) => state.categoryTemplates,
-        getSizes: (state) => state.sizes,
+        getDataUrlSides: (state) => state.dataUrlSides
     }
 }
 
