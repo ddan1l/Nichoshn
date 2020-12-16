@@ -143,8 +143,8 @@ export default{
         RECONFIGURE({commit}, payload ){
             payload.isConfigured = false
             localStorage.removeItem('Configuration')
-            localStorage.removeItem('front')
-            localStorage.removeItem('back')
+            localStorage.removeItem('frontJSON')
+            localStorage.removeItem('backJSON')
             commit('SET_CONFIGURATION', payload)
         },
         // eslint-disable-next-line no-unused-vars

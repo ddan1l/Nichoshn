@@ -11,7 +11,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <div v-else>
+    <div  class="mt-4 mb-3" v-else>
       <v-snackbar outlined :timeout="10000" v-model="TabSnackbar">
         Просмотрите для начала все стороны
         <template v-slot:action="{ attrs }">
@@ -20,40 +20,28 @@
           </v-btn>
         </template>
       </v-snackbar>
-      <v-dialog  v-model="orderingDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <v-card class="ordering">
-          <v-toolbar dark color="black">
-            <v-btn icon dark @click="orderingDialog = false; $store.commit('REMOVE_DATA_URL_SIDES')">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-toolbar-title>Оформление заказа</v-toolbar-title>
-          </v-toolbar>
-          <v-container class="mt-4 orderingContainer">
-                <v-carousel class="orderingCarousel"  hide-delimiters>
-                  <v-carousel-item v-for="(item,i) in dataUrlSides" :key="i" :src="item">
-                  </v-carousel-item>
-                </v-carousel>
-          </v-container>
-        </v-card>
-      </v-dialog>
         <stepper @configure="configure" v-if="!configuration.isConfigured"></stepper>
-        <v-container :class="animationClass" v-if="configuration.isConfigured">
-          <v-card elevation="0" tile outlined  class="mx-auto pa-0">
-            <v-tabs fixed-tabs color="black" v-model="tab">
-              <v-tab :class="[index===0 ? 'br' : undefined, item.side]" v-for="(item, index) in items" :key="index">
-                {{item.tab}}
-              </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="tab">
-              <v-tab-item v-for="item in items" :key="item.tab">
-                <v-card flat>
-                  <keep-alive>
-                    <component @loaded="loadedTabItems++" :saveDataURL="saveDataURL" @order="order()" @reconfigure="reconfigure()" :side="item.side" :image="item.image" v-bind:is="item.content"></component>
-                  </keep-alive>
-                </v-card>
-              </v-tab-item>
-            </v-tabs-items>
-          </v-card>
+        <v-container class="pa-0" v-if="configuration.isConfigured">
+            <v-card elevation="0" tile outlined  class="mx-auto pa-0">
+              <v-tabs  fixed-tabs color="black" v-model="tab">
+                <v-tab tr :class="[index===0 ? 'br' : undefined, item.side]" v-for="(item, index) in items" :key="index">
+                  {{item.tab}}
+                </v-tab>
+                <v-tab class="plug"> </v-tab>
+              </v-tabs>
+              <v-tabs-items :style="{marginTop: tab===2 ? '-50px': 0}" v-model="tab">
+                <v-tab-item v-for="item in items" :key="item.tab">
+                  <v-card flat>
+                    <keep-alive>
+                      <component @loaded="loadedTabItems++" :saveDataURL="saveDataURL" @order="order()" @reconfigure="reconfigure()" :side="item.side" :image="item.image" v-bind:is="item.content"></component>
+                    </keep-alive>
+                  </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                  <Ordering @close="tab = 0"/>
+                </v-tab-item>
+              </v-tabs-items>
+            </v-card>
         </v-container>
     </div>
 </template>
@@ -61,6 +49,7 @@
 <script>
 import Stepper from "@/components/Constructor/Stepper";
 import Side from "@/components/Constructor/Side";
+import Ordering from "@/components/Constructor/Ordering";
 export default {
   name: "Constructor",
   data(){
@@ -75,17 +64,16 @@ export default {
       orderingDialog: false,
       saveDataURL: 0,
       tab: null,
-      animationClass: 'animate__animated animate__zoomIn'
     }
   },
   beforeRouteLeave (to, from, next) {
-    this.animationClass = 'animate__animated animate__zoomOut'
+    //this.animationClass = 'animate__animated animate__zoomOut'
     setTimeout(()=>{
       next()
     }, 500)
   },
   components:{
-    Stepper
+    Stepper, Ordering
   },
   methods:{
     order(){
@@ -93,20 +81,20 @@ export default {
         let min = 0
         let max = 100000
         this.saveDataURL = Math.floor(Math.random() * (max - min + 1) ) + min
-        this.orderingDialog = true
+        this.tab = 2
       }
       else {
         this.TabSnackbar = true
       }
     },
     reconfigure(){
-      this.animationClass = 'animate__animated animate__zoomOut'
+     // this.animationClass = 'animate__animated animate__zoomOut'
       setTimeout(()=>{
         this.$store.dispatch('RECONFIGURE', {})
       }, 500)
     },
     configure(){
-      this.animationClass = 'animate__animated animate__zoomIn'
+      //this.animationClass = 'animate__animated animate__zoomIn'
     }
   },
   computed: {
@@ -134,9 +122,7 @@ export default {
       }
       return items
     },
-    dataUrlSides(){
-      return this.$store.getters.getDataUrlSides
-    },
+
     processing(){
       return this.$store.getters.getProcessing
     },
@@ -161,9 +147,7 @@ export default {
 </script>
 
 <style scoped>
-.v-carousel{
 
-}
 .br{
   border-right: thin solid rgba(0, 0, 0, 0.12);
 }
@@ -171,7 +155,8 @@ export default {
   background-color: transparent
 }
 /deep/.v-image__image {
-  background-size: contain;
+
+  background-size: 90%;
 }
 /deep/.v-snack__wrapper{
   margin-bottom: 50px !important;
@@ -191,13 +176,19 @@ export default {
   border-radius: 0;
 }
 
-.orderingContainer{
-  border: 3px solid #dbdbdb;
-  border-radius: 10px;
-  background: #fbfbfb;
-  background-image: linear-gradient(rgba(229, 229, 229, 0.7) .1em, transparent .1em), linear-gradient(90deg, rgba(229, 229, 229, 0.7) .1em, transparent .1em);
-  background-size: 2.5em 2.5em;
+/deep/.v-icon.notranslate.mdi.mdi-chevron-right.theme--dark,
+/deep/.v-icon.notranslate.mdi.mdi-chevron-left.theme--dark{
+  font-size: 60px !important;
 }
 
+.plug{
+  display: none;
+}
+.container.orderingContainer {
+  box-shadow:0 9px 12px -6px rgba(0, 0, 0, 0.04),0 19px 29px 2px rgba(0, 0, 0, 0),0 7px 36px 6px rgba(0, 0, 0, 0.05) !important;
+  background: #fbfbfb;
+  background-image: linear-gradient(rgba(229, 229, 229, 0.7) .1em, transparent .1em), linear-gradient(90deg, rgba(229, 229, 229, 0.7) .1em, transparent .1em);
+  background-size: 2.4em 2.4em;
+}
 
 </style>

@@ -9,6 +9,7 @@ import firebase from "firebase";
 import VueKonva from 'vue-konva'
 import VueCookies from 'vue-cookies'
 
+
 Vue.use(VueCookies)
 Vue.use(VueKonva)
 Vue.use(VNus)

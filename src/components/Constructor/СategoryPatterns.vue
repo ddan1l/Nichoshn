@@ -67,7 +67,7 @@ export default {
     },
     change(){
       let pattern = JSON.parse(JSON.stringify(this.selectedPattern.options[this.selectedPattern.selectedColor]))
-      pattern.sizes =  this.selectedPattern.options[this.selectedPattern.selectedColor].sizes[this.selectedPattern.selectedSize]
+      pattern.selectedSize =  this.selectedPattern.options[this.selectedPattern.selectedColor].sizes[this.selectedPattern.selectedSize]
       this.$emit('patternSelected', pattern)
     },
   },

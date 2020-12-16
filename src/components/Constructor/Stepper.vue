@@ -1,5 +1,5 @@
  <template>
-   <v-container :class="animationClass"  class="mt-4">
+   <v-container class="mt-4 pa-0">
     <v-stepper v-model="stepperModel" vertical>
       <v-stepper-step color="black" :complete="stepperModel > 1" step="1">
          О констукторе
@@ -54,7 +54,7 @@ export default {
   },
   data(){
     return{
-      animationClass: 'animate__animated animate__zoomIn',
+     // animationClass: 'animate__animated animate__zoomIn',
       stepperModel: 1,
       selectedTemplate: 0,
       selectedPattern: 0
@@ -62,7 +62,7 @@ export default {
   },
   methods:{
     configure(){
-      this.animationClass = 'animate__animated animate__zoomOut'
+     // this.animationClass = 'animate__animated animate__zoomOut'
       this.$store.dispatch('CONFIGURE', this.selectedPattern)
       this.$emit('configure')
     }
