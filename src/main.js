@@ -24,7 +24,7 @@ new Vue({
   created() {
     let vm = this
     firebase.auth().onAuthStateChanged(function(user) {
-     vm.$store.dispatch('STATE_CHANGED', user).then()
+      vm.$store.dispatch('STATE_CHANGED', user).then()
     });
   }
 }).$mount('#app')

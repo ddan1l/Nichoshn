@@ -4,7 +4,7 @@
         style="z-index: 2"
         absolute
         color="transparent"
-        :extended = "!isHidden  "
+        :extended = "!isHidden"
         flat
         height="80"
         app>
@@ -16,9 +16,14 @@
         </h1>
         </router-link>
         <v-btn style="cursor: default; opacity: 0;"></v-btn>
-        <v-tooltip v-if="!isHidden" bottom>
+        <v-dialog v-model="authDialog" max-width="500">
+          <Identify/>
+        </v-dialog>
+        <v-tooltip  bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn x-small text fab v-bind="attrs" v-on="on" to="/profile" class="pa-5 float-right">
+            <v-btn :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                   x-small text fab v-bind="attrs" v-on="on" class="pa-5 float-right"
+                   @click="isAuthenticated ? $router.push('/profile') : authDialog = true">
               <v-icon dark>
                 far fa-user
               </v-icon>
@@ -26,7 +31,7 @@
           </template>
           <span>Профиль</span>
         </v-tooltip>
-        <v-tooltip v-if="!isHidden" bottom>
+        <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn to="/wishlist" v-bind="attrs" v-on="on"  x-small  text fab class="pa-5 mr-2 ml-2 float-right">
               <v-icon dark>
@@ -36,8 +41,7 @@
           </template>
           <span>Избранное</span>
         </v-tooltip>
-
-        <v-tooltip v-if="!isHidden"  bottom>
+        <v-tooltip bottom>
           <template  v-slot:activator="{ on, attrs }">
               <v-btn to="/basket" v-on="on" v-bind="attrs"  x-small text fab class="pa-5 float-right">
                 <v-icon dark>
@@ -48,20 +52,19 @@
           <span>Корзина</span>
         </v-tooltip>
         </div>
-
-
       <template v-if="!isHidden" class="hidden-sm-and-down red--text" v-slot:extension>
         <v-container style="display: flex; justify-content: space-between; max-width: min-content">
-          <v-btn height="48" tile text to="/">
+          <v-btn height="48" tile class="sectionLink" text to="/">
             Главная
           </v-btn>
-          <v-btn color="red" height="48" tile text to="/novelties">
+          <v-btn color="red" class="sectionLink" height="48" tile text to="/novelties">
             Новинки
           </v-btn>
-          <v-menu  elevation="0" rounded="0" offset-y>
+          <v-menu elevation="0" rounded="0" offset-y>
             <template v-slot:activator="{ on, attrs }">
                 <v-btn height="48"
                        link
+                       class="sectionLink"
                        :class="{activeLink: $route.path.includes('clothes')}"
                        v-bind="attrs"
                        v-on="on"
@@ -81,48 +84,16 @@
               </v-list-item>
             </v-list>
           </v-menu>
-
-          <v-btn height="48" tile text>
+          <v-btn class="sectionLink" height="48" tile text>
             Аксессуары
           </v-btn>
-          <v-btn height="48" tile text to="/picture">
+          <v-btn class="sectionLink" height="48" tile text to="/picture">
             Картины
           </v-btn>
-
-          <v-btn height="48" tile text to="/constructor">
+          <v-btn class="sectionLink" height="48" tile text to="/constructor">
             Конструктор
           </v-btn>
-
-          <v-dialog v-if="isAuthenticated" v-model="logoutDialog"  max-width="290">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn   active-class="activeBtn" v-bind="attrs" v-on="on"  text>
-                <v-icon color="white" left>mdi-logout-variant</v-icon>
-                Выйти
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title style="word-break: break-word ;" class="headline ">
-                Вы действительно хотите выйти?
-              </v-card-title>
-              <v-card-text>
-                В дальнейшем вы можете очень сильно пожалеть об этом.
-              </v-card-text>
-
-              <v-divider></v-divider>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="green darken-1" text @click="logoutDialog = false">
-                  Не надо
-                </v-btn>
-                <v-btn color="red darken-1" text @click="logoutDialog = false; signout()">
-                  Я согласен
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-container>
-
       </template>
 
     </v-app-bar>
@@ -130,7 +101,6 @@
       <v-list class="hidden-md-and-up" nav dense>
         <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4">
           <v-list-item  text>
-
           </v-list-item>
           <v-list-item @click="signout" v-if="isAuthenticated" text>
             <v-icon color="primary" left>mdi-logout-variant</v-icon>
@@ -142,14 +112,17 @@
   </div>
 </template>
 <script>
-
+import Identify from "@/views/Identify";
 export default {
   name: "AppHeader",
+  components:{
+    Identify: Identify
+  },
   data(){
     return {
+      authDialog: false,
       drawer: false,
       group: null,
-      logoutDialog: false
     }
   },
   computed:{
@@ -157,7 +130,8 @@ export default {
         return this.$store.getters.getClothingCategories
       },
       isHidden(){
-        return this.$route.name === 'Identify' || this.$route.name === 'Constructor';
+        let name = this.$route.name
+        return name === 'Identify' || name === 'Constructor' || name === 'Profile';
       },
       isAuthenticated(){
         return this.$store.getters.isAuthenticated
@@ -173,6 +147,11 @@ export default {
     group () {
       this.drawer = false
     },
+    isAuthenticated(val){
+      if (val){
+        this.authDialog = false
+      }
+    }
   },
 }
 </script>
@@ -192,7 +171,7 @@ export default {
   background-color: 0 0;
 }*/
 
-/deep/ span.v-btn__content {
+/deep/ .sectionLink > .v-btn__content {
   font-weight: 300;
 }
 .v-list-item__title {
@@ -216,7 +195,7 @@ export default {
 i{
   font-size: 16px;
 }
-/deep/.v-btn:focus {
+/deep/.activeLink:focus {
   border: none;
   outline: none;
   border: 1px solid;

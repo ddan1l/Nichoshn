@@ -24,7 +24,7 @@
         <v-container class="pa-0" v-if="configuration.isConfigured">
             <v-card elevation="0" tile outlined  class="mx-auto pa-0">
               <v-tabs  fixed-tabs color="black" v-model="tab">
-                <v-tab tr :class="[index===0 ? 'br' : undefined, item.side]" v-for="(item, index) in items" :key="index">
+                <v-tab  :class="[index===0 ? 'br' : undefined, item.side]" v-for="(item, index) in items" :key="index">
                   {{item.tab}}
                 </v-tab>
                 <v-tab class="plug"> </v-tab>

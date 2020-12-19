@@ -3,11 +3,13 @@ export default{
     state: {
         user: {
             isAuthenticated: false,
+            isEmailVerified: false,
             uid: null
         }
     },
     mutations: {
         SET_USER(state, payload){
+            state.user.isEmailVerified = firebase.auth().currentUser.emailVerified
             state.user.isAuthenticated = true
             state.user.uid = payload
         },
@@ -19,19 +21,45 @@ export default{
         }
     },
     actions: {
-        SIGNUP({commit}, payload){
+        GOOGLE_AUTHENTICATION({commit}){
+            commit('SET_PROCESSING', true)
+            commit('CLEAR_ERROR')
+            let provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).then(function() {
+                commit('SET_PROCESSING', false)
+            }).catch(function(error) {
+                commit('SET_PROCESSING', false)
+                commit('SET_ERROR', error.message)
+            });
+        },
+        FACEBOOK_AUTHENTICATION({commit}){
+            commit('SET_PROCESSING', true)
+            commit('CLEAR_ERROR')
+            let provider = new firebase.auth.FacebookAuthProvider();
+            firebase.auth().signInWithPopup(provider).then(function() {
+                commit('SET_PROCESSING', false)
+            }).catch(function(error) {
+                commit('SET_PROCESSING', false)
+                commit('SET_ERROR', error.message)
+            });
+        },
+        CREATE_USER_WITH_EMAIL_AND_PASSWORD({commit}, payload){
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
             firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-                .then(() =>{
-                    commit('SET_PROCESSING', false)
+                .then(() => {
+                     firebase.auth().currentUser.updateProfile({
+                         displayName: payload.name,
+                     }).then()
+                    firebase.auth().currentUser.sendEmailVerification().then()
+                     commit('SET_PROCESSING', false)
                 })
                 .catch(function(error) {
                     commit('SET_PROCESSING', false)
-                        commit('SET_ERROR', error.message)
+                    commit('SET_ERROR', error.message)
             });
         },
-        SIGNIN({commit}, payload){
+        SIGN_IN_WITH_EMAIL_AND_PASSWORD({commit}, payload){
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
             firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
@@ -41,7 +69,7 @@ export default{
                 .catch(function(error) {
                     commit('SET_PROCESSING', false)
                     commit('SET_ERROR', error.message)
-                });
+                })
         },
         SIGNOUT(){
             firebase.auth().signOut().then()
