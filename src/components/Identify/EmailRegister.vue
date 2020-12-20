@@ -8,7 +8,7 @@
         </v-btn>
       </v-toolbar>
       <v-col cols="12" sm="10" offset-sm="1">
-        <v-alert :value="error"  type="warning">
+        <v-alert v-if="error!==null" type="warning">
           {{error}}
         </v-alert>
         <div class="title text-center mb-4">Расскажите немного о себе</div>
@@ -78,9 +78,6 @@ export default {
     processing(){
       return this.$store.getters.getProcessing
     },
-    isAuthenticated(){
-      return this.$store.getters.isAuthenticated
-    }
   },
   methods:{
     createUserWithPasswordAndEmail() {
@@ -95,15 +92,7 @@ export default {
       })
     }
   },
-  watch:{
-    isAuthenticated(val){
-      if (val){
-        if (this.$route.path !== '/profile'){
-          this.$router.push("/profile")
-        }
-      }
-    }
-  }
+
 }
 </script>
 <style scoped>

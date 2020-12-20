@@ -11,7 +11,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <div  class="mt-4 mb-3" v-else>
+    <div class="mt-4 mb-3" v-else>
       <v-snackbar outlined :timeout="10000" v-model="TabSnackbar">
         Просмотрите для начала все стороны
         <template v-slot:action="{ attrs }">
@@ -155,7 +155,6 @@ export default {
   background-color: transparent
 }
 /deep/.v-image__image {
-
   background-size: 90%;
 }
 /deep/.v-snack__wrapper{

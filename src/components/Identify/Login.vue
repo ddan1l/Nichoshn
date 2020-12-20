@@ -1,11 +1,13 @@
 <template >
   <v-container fluid full-height>
     <v-layout row wrap align-center>
-      <v-col  cols="12" sm="10" offset-sm="1" >
+      <v-col cols="12" sm="10" offset-sm="1">
         <div class="headline font-weight-light text-center mb-4">Войдите в учетную запись</div>
-      <v-alert :value="error"  type="warning">
-        {{error}}
-      </v-alert>
+        <transition name="fade">
+        <v-alert dismissible icon="fas fa-exclamation-triangle" dense outlined  :value="error!==null" type="error">
+          {{error}}
+        </v-alert>
+        </transition>
         <v-btn height="50" @click="googleAuth" class="text-none mb-4" large block outlined>
           <v-icon style="width: 18px" class="mr-4" size="18">
             fab fa-google
@@ -63,8 +65,13 @@ export default {
   watch:{
     isAuthenticated(val){
       if (val){
-        if (this.$route.path !== '/profile'){
-          this.$router.push("/profile")
+        if (this.isEmailVerified){
+          if (this.$route.path !== '/profile'){
+            this.$router.push("/profile")
+          }
+        }
+        else {
+          this.$emit('verifyEmail')
         }
       }
     }
@@ -74,5 +81,10 @@ export default {
 </script>
 
 <style scoped>
-
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  opacity: 0;
+}
 </style>

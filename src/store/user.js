@@ -4,12 +4,15 @@ export default{
         user: {
             isAuthenticated: false,
             isEmailVerified: false,
+            email: '',
             uid: null
         }
     },
     mutations: {
         SET_USER(state, payload){
+            console.log(firebase.auth().currentUser)
             state.user.isEmailVerified = firebase.auth().currentUser.emailVerified
+            state.user.email = firebase.auth().currentUser.email
             state.user.isAuthenticated = true
             state.user.uid = payload
         },
@@ -36,7 +39,8 @@ export default{
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
             let provider = new firebase.auth.FacebookAuthProvider();
-            firebase.auth().signInWithPopup(provider).then(function() {
+            firebase.auth().signInWithPopup(provider).then(() => {
+                firebase.auth().currentUser.sendEmailVerification().then()
                 commit('SET_PROCESSING', false)
             }).catch(function(error) {
                 commit('SET_PROCESSING', false)
@@ -71,6 +75,9 @@ export default{
                     commit('SET_ERROR', error.message)
                 })
         },
+        VERIFY_EMAIL(){
+            firebase.auth().currentUser.sendEmailVerification().then()
+        },
         SIGNOUT(){
             firebase.auth().signOut().then()
         },
@@ -84,6 +91,8 @@ export default{
         }
     },
     getters:{
-        isAuthenticated: (state) => state.user.isAuthenticated
+        isEmailVerified: (state) => state.user.isEmailVerified,
+        isAuthenticated: (state) => state.user.isAuthenticated,
+        userEmail: (state) => state.user.email
     }
 }

@@ -19,11 +19,11 @@
         <v-dialog v-model="authDialog" max-width="500">
           <Identify/>
         </v-dialog>
-        <v-tooltip  bottom>
+        <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-btn :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
                    x-small text fab v-bind="attrs" v-on="on" class="pa-5 float-right"
-                   @click="isAuthenticated ? $router.push('/profile') : authDialog = true">
+                   @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
               <v-icon dark>
                 far fa-user
               </v-icon>
@@ -112,7 +112,7 @@
   </div>
 </template>
 <script>
-import Identify from "@/views/Identify";
+import Identify from "@/components/Identify";
 export default {
   name: "AppHeader",
   components:{
@@ -136,6 +136,9 @@ export default {
       isAuthenticated(){
         return this.$store.getters.isAuthenticated
       },
+      isEmailVerified(){
+        return this.$store.getters.isEmailVerified
+      }
   },
   methods:{
    signout(){
@@ -149,7 +152,9 @@ export default {
     },
     isAuthenticated(val){
       if (val){
-        this.authDialog = false
+        if (this.isEmailVerified){
+          this.authDialog = false
+        }
       }
     }
   },
@@ -213,6 +218,9 @@ header{
 }
 .v-btn.v-btn--flat.v-btn--router.v-btn--text.v-btn--tile.theme--light.v-size--default, .v-btn.v-btn--flat.v-btn--text.v-btn--tile.theme--light.v-size--default {
   margin: 0 10px;
+}
+/deep/.v-dialog {
+  overflow: hidden !important;
 }
 .v-navigation-drawer.v-navigation-drawer--absolute.v-navigation-drawer--close.v-navigation-drawer--is-mobile.v-navigation-drawer--temporary.theme--light {
   z-index: 1 !important;

@@ -8,7 +8,7 @@
         </v-btn>
       </v-toolbar>
       <v-col cols="12" sm="10" offset-sm="1">
-        <v-alert :value="error"  type="warning">
+        <v-alert v-if="error" type="warning">
           {{error}}
         </v-alert>
         <validation-observer ref="observer">
@@ -89,8 +89,13 @@ export default {
   watch:{
     isAuthenticated(val){
       if (val){
-        if (this.$route.path !== '/profile'){
-          this.$router.push("/profile")
+        if (this.isEmailVerified){
+          if (this.$route.path !== '/profile'){
+            this.$router.push("/profile")
+          }
+        }
+        else {
+          this.$emit('verifyEmail')
         }
       }
     }

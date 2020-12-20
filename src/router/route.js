@@ -56,8 +56,12 @@ const router = new VueRouter({
 
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'Profile' && !Store.getters.isAuthenticated) next({ name: 'Identify' })
-  else next()
+  if (to.name === 'Profile' && !Store.getters.isAuthenticated || to.name === 'Profile' && !Store.getters.isEmailVerified){
+    next({ name: 'Identify' })
+  }
+  else {
+    next()
+  }
 })
 
 export default router
