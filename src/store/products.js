@@ -1,3 +1,4 @@
+import Vue from 'vue'
 export default {
     state:{
         categoriesInfo:[
@@ -400,7 +401,7 @@ export default {
                 category: 'Шопперы',
                 categoryURL: 'shoppers',
                 description: 'Международный преступник Итачи Учиха',
-                images:[
+                images: [
                     {
                         imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
                     },
@@ -416,7 +417,7 @@ export default {
                     },
                 ],
                 care: 'Машинная стирка',
-                sizes:[
+                sizes: [
                     {
                         size: '40×40'
                     },
@@ -425,7 +426,7 @@ export default {
                     }
                 ],
                 structure: {
-                    components:[
+                    components: [
                         {
                             component: 'Саржа',
                             url: 'sarzha'
@@ -440,16 +441,10 @@ export default {
                 },
                 price: 170,
                 discount: 0.5
-            },
-
-
-        ],
+            }],
         product: {}
     },
     mutations:{
-        SET_CLOTHING(state, payload) {
-            state.clothing = payload
-        },
         SET_PRODUCT(state, payload){
             state.product = payload
         },
@@ -465,6 +460,22 @@ export default {
         }
     },
     actions: {
+        GET_DATA(){
+            Vue.prototype.$db.collection("clothes")
+                .where("colors", "array-contains", "green").get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        console.log(doc.data());
+                    })
+                });
+          /*  Vue.prototype.$db.collection("clothes").get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    console.log(doc.data());
+                    Vue.prototype.$db.collection("clothes").doc(doc.data().url).set(doc.data()).then();
+                });
+            });
+
+           */
+        },
         FIND_PRODUCT({commit, getters}, payload){
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
@@ -482,7 +493,7 @@ export default {
                     commit('SET_PROCESSING', false)
                     commit('SET_ERROR', 'Продукт не найден')
                 }
-            }, 3000)
+            }, 100)
         }
     },
     getters:{

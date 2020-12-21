@@ -19,10 +19,10 @@
         <v-dialog v-model="authDialog" max-width="500">
           <Identify/>
         </v-dialog>
-        <v-tooltip bottom>
+        <v-tooltip v-model="show" bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
-                   x-small text fab v-bind="attrs" v-on="on" class="pa-5 float-right"
+            <v-btn @mouseleave="show = false" @mouseover="show = true" :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                   x-small text fab v-bind="attrs" class="pa-5 float-right"
                    @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
               <v-icon dark>
                 far fa-user
@@ -120,6 +120,7 @@ export default {
   },
   data(){
     return {
+      show: false,
       authDialog: false,
       drawer: false,
       group: null,

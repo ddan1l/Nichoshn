@@ -3,11 +3,17 @@
     <v-layout row wrap align-center>
       <v-col cols="12" sm="10" offset-sm="1">
         <div class="headline font-weight-light text-center mb-4">Войдите в учетную запись</div>
-        <transition name="fade">
-        <v-alert dismissible icon="fas fa-exclamation-triangle" dense outlined  :value="error!==null" type="error">
-          {{error}}
-        </v-alert>
-        </transition>
+        <v-snackbar width="150" outlined :timeout="10000" v-model="snack">
+          <v-alert class="mx-auto mb-0" :key="'alert'" max-width="390" text icon="fas fa-exclamation-triangle" dense outlined type="error">
+            {{error}}
+            <v-btn @click="closeSnack()" width="20" height="20" class="dismiss" icon>
+                <span class="fa-stack fa-2x">
+                  <i style="color: white" class="fas fa-circle fa-stack-1x"></i>
+                  <i style="color: #ff5252" class="fas fa-times-circle fa-stack-1x fa-inverse"></i>
+                </span>
+            </v-btn>
+          </v-alert>
+        </v-snackbar>
         <v-btn height="50" @click="googleAuth" class="text-none mb-4" large block outlined>
           <v-icon style="width: 18px" class="mr-4" size="18">
             fab fa-google
@@ -39,9 +45,9 @@ export default {
     return {
       email: '',
       password: '',
+      snack: false
     }
   },
-
   computed:{
     error(){
       return this.$store.getters.getError
@@ -54,6 +60,12 @@ export default {
     }
   },
   methods:{
+      closeSnack(){
+        this.snack = false
+        setTimeout(()=>{
+          this.$store.commit('CLEAR_ERROR')
+        }, 1000)
+      },
       facebookAuth(){
         this.$store.dispatch('FACEBOOK_AUTHENTICATION')
       },
@@ -63,6 +75,16 @@ export default {
 
   },
   watch:{
+    error(val){
+      this.snack = val !== null;
+    },
+    snack(val){
+      if (!val){
+        setTimeout(()=>{
+          this.$store.commit('CLEAR_ERROR')
+        }, 1000)
+      }
+    },
     isAuthenticated(val){
       if (val){
         if (this.isEmailVerified){

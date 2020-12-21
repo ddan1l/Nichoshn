@@ -2,14 +2,17 @@
   <v-container fluid full-height>
     <v-layout row wrap align-center>
       <v-col cols="12" sm="10" offset-sm="1">
-        <transition-group name="list">
-            <v-alert class="mx-auto" v-if="error!==null" :key="'alert'" max-width="390" text icon="fas fa-exclamation-triangle" dense outlined type="error">
+          <v-snackbar width="150" outlined :timeout="10000" v-model="snack">
+            <v-alert class="mx-auto mb-0" :key="'alert'" max-width="390" text icon="fas fa-exclamation-triangle" dense outlined type="error">
               {{error}}
-              <v-btn @click="$store.commit('CLEAR_ERROR')" width="20" height="20" class="dismiss" icon>
-                <v-icon style="background-color: white; border-radius: 50%" size="20" color="error">fas fa-times-circle</v-icon>
+              <v-btn @click="closeSnack()" width="20" height="20" class="dismiss" icon>
+                <span class="fa-stack fa-2x">
+                  <i style="color: white" class="fas fa-circle fa-stack-1x"></i>
+                  <i style="color: #ff5252" class="fas fa-times-circle fa-stack-1x fa-inverse"></i>
+                </span>
               </v-btn>
             </v-alert>
-          <div :key="'list'">
+          </v-snackbar>
             <div class="headline font-weight-light text-center mb-2">Создайте учетную запись</div>
             <div class="subtitle-2 text-center mb-5 px-2">Откройте доступ к своему профилю, чтобы иметь возможность просматривать корзину
               и  понравившееся товары с любых устройств, сохранять созданные в
@@ -46,8 +49,6 @@
                 </template>
               </v-checkbox>
             </div>
-          </div>
-        </transition-group>
       </v-col>
     </v-layout>
   </v-container>
@@ -58,7 +59,8 @@ export default {
   name: "Register",
   data() {
     return {
-      checked: false
+      checked: false,
+      snack: false
     }
   },
   computed:{
@@ -73,6 +75,12 @@ export default {
     }
   },
   methods:{
+    closeSnack(){
+      this.snack = false
+      setTimeout(()=>{
+        this.$store.commit('CLEAR_ERROR')
+      }, 1000)
+    },
     facebookAuth(){
       this.$store.dispatch('FACEBOOK_AUTHENTICATION')
     },
@@ -81,6 +89,16 @@ export default {
     },
   },
   watch:{
+    error(val){
+      this.snack = val !== null;
+    },
+    snack(val){
+      if (!val){
+        setTimeout(()=>{
+          this.$store.commit('CLEAR_ERROR')
+        }, 1000)
+      }
+    },
     isAuthenticated(val){
       if (val){
         if (this.isEmailVerified){
@@ -97,35 +115,9 @@ export default {
 
 }
 </script>
-
-<style scoped>
-
-</style>
 <style>
-.list-enter-active {
-  animation: showAlert .5s;
-}
-.list-leave-active {
-  position: absolute;
-  animation: showAlert .5s reverse;
-}
-.list-move {
-  transition: transform .5s;
-}
-
-@keyframes showAlert {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.3);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+.fa-stack-1x {
+  color:white;
 }
 .dismiss.v-btn.v-btn--flat.v-btn--icon.v-btn--round.theme--light.v-size--default {
   position: absolute;
@@ -139,5 +131,20 @@ export default {
 .v-icon.notranslate.v-alert__icon.fas.fa-exclamation-triangle.theme--light.error--text {
   font-size: 18px;
   align-self: center;
+}
+div.v-snack__content {
+  padding: 0 !important;
+  margin-right: -9px;
+}
+div.v-snack__wrapper{
+  border: none !important;
+}
+.fa-2x {
+  font-size: 1.7em;
+  width: 25px;
+}
+i{
+  vertical-align: middle;
+  height: 25px;
 }
 </style>

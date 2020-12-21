@@ -71,8 +71,12 @@ export default {
         this.tab = 4
       }
     }
+  },
+  watch:{
+    tab(){
+      this.$store.commit('CLEAR_ERROR')
+    }
   }
-
 }
 </script>
 

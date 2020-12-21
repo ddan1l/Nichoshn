@@ -8,9 +8,17 @@
         </v-btn>
       </v-toolbar>
       <v-col cols="12" sm="10" offset-sm="1">
-        <v-alert v-if="error!==null" type="warning">
-          {{error}}
-        </v-alert>
+        <v-snackbar width="150" outlined :timeout="10000" v-model="snack">
+          <v-alert class="mx-auto mb-0" :key="'alert'" max-width="390" text icon="fas fa-exclamation-triangle" dense outlined type="error">
+            {{error}}
+            <v-btn @click="closeSnack()" width="20" height="20" class="dismiss" icon>
+                <span class="fa-stack fa-2x">
+                  <i style="color: white" class="fas fa-circle fa-stack-1x"></i>
+                  <i style="color: #ff5252" class="fas fa-times-circle fa-stack-1x fa-inverse"></i>
+                </span>
+            </v-btn>
+          </v-alert>
+        </v-snackbar>
         <div class="title text-center mb-4">Расскажите немного о себе</div>
     <validation-observer ref="observer">
         <v-form>
@@ -68,7 +76,8 @@ export default {
     return {
       email: '',
       password: '',
-      name: ''
+      name: '',
+      snack: false
     }
   },
   computed:{
@@ -80,6 +89,12 @@ export default {
     },
   },
   methods:{
+    closeSnack(){
+      this.snack = false
+      setTimeout(()=>{
+        this.$store.commit('CLEAR_ERROR')
+      }, 1000)
+    },
     createUserWithPasswordAndEmail() {
       this.$refs.observer.validate().then(result => {
         if (result) {
@@ -92,7 +107,18 @@ export default {
       })
     }
   },
-
+  watch:{
+    error(val){
+      this.snack = val !== null;
+    },
+    snack(val){
+      if (!val){
+        setTimeout(()=>{
+          this.$store.commit('CLEAR_ERROR')
+        }, 1000)
+      }
+    },
+  }
 }
 </script>
 <style scoped>
