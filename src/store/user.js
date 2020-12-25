@@ -1,34 +1,52 @@
 import firebase from "firebase";
+import Vue from 'vue'
 export default{
     state: {
         user: {
             isAuthenticated: false,
             isEmailVerified: false,
             email: '',
-            uid: null
-        }
+            uid: null,
+            isAdmin: false
+        },
     },
     mutations: {
-        SET_USER(state, payload){
-            console.log(firebase.auth().currentUser)
+        SET_USER(state){
             state.user.isEmailVerified = firebase.auth().currentUser.emailVerified
-            state.user.email = firebase.auth().currentUser.email
             state.user.isAuthenticated = true
-            state.user.uid = payload
+            state.user.email = firebase.auth().currentUser.email
+            state.user.uid =  firebase.auth().currentUser.uid
         },
         UNSET_USER(state){
             state.user = {
                 isAuthenticated: false,
-                uid: null
+                isEmailVerified: false,
+                email: '',
+                uid: null,
+                isAdmin: false
             }
-        }
+        },
     },
     actions: {
-        GOOGLE_AUTHENTICATION({commit}){
+        INIT_AUTH({dispatch}){
+            return new Promise((resolve) => {
+                firebase.auth().onAuthStateChanged((user) => {
+                    dispatch('STATE_CHANGED', user)
+                    resolve(user)
+                });
+            })
+        },
+        ADD_USER({state}){
+            Vue.prototype.$db.collection("users").doc(state.user.uid).set({}, {merge: true}).then()
+         },
+        GOOGLE_AUTHENTICATION({commit, dispatch}){
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
             let provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithPopup(provider).then(function() {
+                dispatch('INIT_AUTH').then(()=>{
+                    dispatch('ADD_USER')
+                })
                 commit('SET_PROCESSING', false)
             }).catch(function(error) {
                 commit('SET_PROCESSING', false)
@@ -81,9 +99,12 @@ export default{
         SIGNOUT(){
             firebase.auth().signOut().then()
         },
-        STATE_CHANGED({commit}, payload){
+        STATE_CHANGED({commit, dispatch, state}, payload){
             if (payload){
-                commit('SET_USER', payload.uid)
+                commit('SET_USER')
+                if (state.user.isEmailVerified){
+                    dispatch('ADD_USER')
+                }
             }
             else {
                 commit('UNSET_USER')
@@ -91,8 +112,10 @@ export default{
         }
     },
     getters:{
+        isAdmin: (state) => state.user.isAdmin,
         isEmailVerified: (state) => state.user.isEmailVerified,
         isAuthenticated: (state) => state.user.isAuthenticated,
-        userEmail: (state) => state.user.email
+        userEmail: (state) => state.user.email,
+        user: () => firebase.auth().currentUser
     }
 }

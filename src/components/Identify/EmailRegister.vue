@@ -51,6 +51,7 @@ extend('required', {
   ...required,
   message: 'Это поле должно быть заполнено',
 })
+
 extend('email', {
   ...email,
   message: 'Неверный формат',

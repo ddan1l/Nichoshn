@@ -14,6 +14,14 @@ Vue.use(VueCookies)
 Vue.use(VueKonva)
 Vue.use(VNus)
 Vue.config.productionTip = false
+Vue.mixin({
+  methods: {
+    globalHelper: function () {
+      alert("Hello world")
+    },
+  },
+})
+
 const firebaseApp =  firebase.initializeApp(firebaseConfig);
 Vue.prototype.$db = firebaseApp.firestore()
 
@@ -23,9 +31,6 @@ new Vue({
   vuetify,
   render: h => h(App),
   created() {
-    firebase.auth().onAuthStateChanged((user) => {
-      this.$store.dispatch('STATE_CHANGED', user).then()
-    });
     this.$store.dispatch('GET_DATA').then()
   }
 }).$mount('#app')

@@ -3,55 +3,58 @@
     <v-app-bar
         style="z-index: 2"
         absolute
-        color="transparent"
         :extended = "!isHidden"
+        :style="{position: $route.path==='/admin'?  'fixed': undefined}"
+        color="transparent"
         flat
-        height="80"
         app>
       <v-app-bar-nav-icon class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <div class="container">
-        <router-link to="/" tag="h1">
-        <h1 style="cursor: pointer" class="logo">
-          Ничошный шоп
-        </h1>
-        </router-link>
-        <v-btn style="cursor: default; opacity: 0;"></v-btn>
-        <v-dialog v-model="authDialog" max-width="500">
-          <Identify/>
-        </v-dialog>
-        <v-tooltip v-model="show" bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn @mouseleave="show = false" @mouseover="show = true" :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
-                   x-small text fab v-bind="attrs" class="pa-5 float-right"
-                   @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
-              <v-icon dark>
-                far fa-user
-              </v-icon>
-            </v-btn>
-          </template>
-          <span>Профиль</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn to="/wishlist" v-bind="attrs" v-on="on"  x-small  text fab class="pa-5 mr-2 ml-2 float-right">
-              <v-icon dark>
-                far fa-heart
-              </v-icon>
-            </v-btn>
-          </template>
-          <span>Избранное</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template  v-slot:activator="{ on, attrs }">
+      <div :class="$route.path==='/admin'? 'admin' : undefined" style="width: 100%; height: 64px">
+        <v-container>
+          <router-link to="/" tag="h1">
+            <h1 style="cursor: pointer" class="logo">
+              Ничошный шоп
+            </h1>
+          </router-link>
+          <v-btn style="cursor: default; opacity: 0;"></v-btn>
+          <v-dialog v-model="authDialog" max-width="500">
+            <Identify/>
+          </v-dialog>
+          <v-tooltip v-model="show" bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn @mouseleave="show = false" @mouseover="show = true" :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                     x-small text fab v-bind="attrs" class="pa-5 float-right"
+                     @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
+                <v-icon dark>
+                  far fa-user
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Профиль</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn to="/wishlist" v-bind="attrs" v-on="on"  x-small  text fab class="pa-5 mr-2 ml-2 float-right">
+                <v-icon dark>
+                  far fa-heart
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Избранное</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template  v-slot:activator="{ on, attrs }">
               <v-btn to="/basket" v-on="on" v-bind="attrs"  x-small text fab class="pa-5 float-right">
                 <v-icon dark>
                   $shoppingBag
                 </v-icon>
               </v-btn>
-          </template>
-          <span>Корзина</span>
-        </v-tooltip>
-        </div>
+            </template>
+            <span>Корзина</span>
+          </v-tooltip>
+        </v-container>
+      </div>
+
       <template v-if="!isHidden" class="hidden-sm-and-down red--text" v-slot:extension>
         <v-container style="display: flex; justify-content: space-between; max-width: min-content">
           <v-btn height="48" tile class="sectionLink" text to="/">
@@ -95,20 +98,19 @@
           </v-btn>
         </v-container>
       </template>
-
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" absolute  temporary >
-      <v-list class="hidden-md-and-up" nav dense>
-        <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4">
-          <v-list-item  text>
-          </v-list-item>
-          <v-list-item @click="signout" v-if="isAuthenticated" text>
-            <v-icon color="primary" left>mdi-logout-variant</v-icon>
-            Выйти
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
+      <v-navigation-drawer v-model="drawer" absolute  temporary >
+        <v-list class="hidden-md-and-up" nav dense>
+          <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4">
+            <v-list-item  text>
+            </v-list-item>
+            <v-list-item @click="signout" v-if="isAuthenticated" text>
+              <v-icon color="primary" left>mdi-logout-variant</v-icon>
+              Выйти
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-navigation-drawer>
   </div>
 </template>
 <script>
@@ -132,7 +134,7 @@ export default {
       },
       isHidden(){
         let name = this.$route.name
-        return name === 'Identify' || name === 'Constructor' || name === 'Profile';
+        return name === 'Identify' || name === 'Constructor' || name === 'Profile' || name === 'Admin';
       },
       isAuthenticated(){
         return this.$store.getters.isAuthenticated
@@ -206,7 +208,14 @@ i{
   outline: none;
   border: 1px solid;
 }
-
+.admin{
+  border-bottom: 1px solid #dadada;
+  box-shadow: 0 1px 5px #0000002e;
+  position: fixed;
+}
+/deep/.v-toolbar__content {
+  padding: 0 !important;
+}
 .v-menu__content {
   border: 1px solid;
   box-shadow: none;

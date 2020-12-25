@@ -462,19 +462,16 @@ export default {
     actions: {
         GET_DATA(){
             Vue.prototype.$db.collection("clothes")
-                .where("colors", "array-contains", "green").get().then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        console.log(doc.data());
-                    })
-                });
-          /*  Vue.prototype.$db.collection("clothes").get().then((querySnapshot) => {
+            .where("colors", "array-contains", "green")
+            .where("price", ">=", 140)
+            .where("price", "<=", 200)
+            .get()
+            .then((querySnapshot) => {
+                // eslint-disable-next-line no-unused-vars
                 querySnapshot.forEach((doc) => {
-                    console.log(doc.data());
-                    Vue.prototype.$db.collection("clothes").doc(doc.data().url).set(doc.data()).then();
-                });
-            });
-
-           */
+                   // console.log(doc.data());
+                })
+             });
         },
         FIND_PRODUCT({commit, getters}, payload){
             commit('SET_PROCESSING', true)
@@ -497,7 +494,7 @@ export default {
         }
     },
     getters:{
-        getWishList(state){
+        getWishList: (state)=>{
           return state.wishlist
         },
         getProduct: (state) =>{
