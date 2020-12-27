@@ -13,6 +13,7 @@
     "konva": "^7.2.0",
     "nouislider": "^14.6.2",
     "swiper": "^6.3.5",
+    "uid": "^2.0.0",
     "vee-validate": "^3.4.5",
     "velocity-animate": "^1.5.2",
     "velocity-vue": "^1.1.1",

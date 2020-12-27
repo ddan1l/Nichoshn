@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-dialog persistent v-model="colorDialog" max-width="600">
+    <v-dialog persistent v-model="sizeDialog" max-width="400">
       <v-card class="px-5 pt-4">
         <v-col sm="12" >
           <div class="text-center headline">
@@ -10,17 +10,7 @@
         <validation-observer ref="observer">
           <v-form>
             <v-row>
-              <v-col sm="6">
-                <v-color-picker
-                    v-model="hex"
-                    class="mb-7"
-                    elevation="2"
-                    dot-size="29"
-                    hide-mode-switch
-                    mode="hexa"
-                ></v-color-picker>
-              </v-col>
-              <v-col sm="6">
+              <v-col sm="12">
                 <validation-provider v-slot="{errors}" name="Название" rules="required">
                   <v-text-field
                       v-model="name"
@@ -30,24 +20,14 @@
                       placeholder="Название"
                   ></v-text-field>
                 </validation-provider>
-                <v-text-field
-                    v-model="url"
-                    color="black"
-                    outlined
-                    readonly
-                    placeholder="URL"
-                ></v-text-field>
-
-                <v-btn class="mr-2 ml-6 mb-5" color="grey darken-1" text @click="colorDialog = false">
-                  Отмена
-                </v-btn>
-                <v-btn class="mb-5" @click.prevent="handleColor" outlined color="black darken-1">
+                <v-btn class="mb-5" @click.prevent="handleSize" outlined color="black darken-1">
                   Применить
                 </v-btn>
-
+                <v-btn class="ml-2 mb-5" color="grey darken-1" text @click="sizeDialog = false">
+                  Отмена
+                </v-btn>
               </v-col>
             </v-row>
-
           </v-form>
         </validation-observer>
       </v-card>
@@ -55,14 +35,14 @@
     <v-dialog persistent v-model="deleteDialog" max-width="400">
       <v-card>
         <v-card-title class="headline mb-3">
-          Удалить данный цвет?
+          Удалить данный размер?
         </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text @click="deleteDialog = false">
             Нет
           </v-btn>
-          <v-btn outlined @click="deleteColor()">
+          <v-btn outlined @click="deleteSize">
             Да
           </v-btn>
         </v-card-actions>
@@ -71,7 +51,7 @@
     <SnackBar :message="message" :status="status"/>
     <v-col sm="12">
       <div style="display: flex">
-        <div style="width: min-content" class="title font-weight-regular">Цвета</div>
+        <div style="width: min-content" class="title font-weight-regular">Размеры</div>
         <v-spacer></v-spacer>
         <v-btn @click="handleAddingButton()" class="mr-10" rounded outlined>
           Добавить
@@ -88,7 +68,7 @@
           color="black"
       ></v-progress-circular>
     </div>
-    <v-col v-else style="transition: 1s" sm="3" v-for="(item, index) in colors" :key="index">
+    <v-col v-else style="transition: 1s" sm="3" v-for="(item, index) in sizes" :key="index">
       <v-hover>
         <template v-slot:default="{hover}">
           <v-card height="100%" :class="`elevation-${hover ? 24 : 6}`" class="px-9 transition-swing pt-4 pb-3">
@@ -111,10 +91,7 @@
                 </v-btn>
               </div>
             </v-expand-transition>
-            <div style="font-size: 22px !important" class="title text-center mb-1">{{ item.color }}</div>
-            <div class="body-1 text-center mb-2">{{ item.hex }}</div>
-            <div :style="{backgroundColor: item.hex}" class="color  mb-2"></div>
-            <div class="subtitle-1 grey--text text--darken-3 text-center">URL: {{ item.url }}</div>
+            <div style="font-size: 22px !important" class="title text-center mb-1">{{ item.size }}</div>
           </v-card>
         </template>
       </v-hover>
@@ -125,7 +102,6 @@
 
 <script>
 import SnackBar from "@/components/SnackBar";
-import transliterate from "@/Mixins/transiterate";
 import {required} from 'vee-validate/dist/rules'
 import {extend, ValidationObserver, ValidationProvider, setInteractionMode} from 'vee-validate'
 
@@ -136,70 +112,62 @@ extend('required', {
 })
 
 export default {
-  name: "Colors",
+  name: "Sizes",
   components:{
     SnackBar,
     ValidationObserver,
     ValidationProvider
   },
-  mixins: [transliterate],
   data(){
     return{
       selectedMode: '',
       message: '',
       status: 'error',
       modesDescription: new Map(),
-      colorDialog: false,
+      sizeDialog: false,
       deleteDialog: false,
       activeId: '',
       activeIndex: '',
       name: '',
-      hex: ''
     }
   },
   methods: {
     handleAddingButton() {
-      this.colorDialog = true
+      this.sizeDialog = true
       this.selectedMode = 'Adding';
       this.name = '';
-      this.hex = '';
       if (this.$refs.observer) {
         this.$refs.observer.reset()
       }
     },
     handleUpdatingButton(item, index) {
-      this.colorDialog = true;
+      this.sizeDialog = true;
       this.activeIndex = index
       this.selectedMode = 'Updating';
       this.activeId = item.id;
-      this.name = item.color;
-      this.hex = item.hex;
+      this.name = item.size;
     },
     handleDeletingButton(item, index) {
       this.deleteDialog = true
       this.activeId = item.id
       this.activeIndex = index
     },
-    deleteColor() {
+    deleteSize() {
       this.deleteDialog = false
-      this.$store.dispatch('DELETE_COLOR', this.activeId).then((info) => {
+      this.$store.dispatch('DELETE_SIZE', this.activeId).then((info) => {
         if (info.message) {
           this.message = info.message
           this.status = 'success'
         }
       })
     },
-    handleColor() {
+    handleSize() {
       this.$refs.observer.validate().then(result => {
         if (result) {
-          let color = {
-            color: this.name,
-            url: this.url,
-            hex: this.hex,
-            id: ''
-          }
           if (this.selectedMode === 'Adding') {
-            this.$store.dispatch('ADD_COLOR', color).then((info) => {
+            this.$store.dispatch('ADD_SIZE', {
+              size: this.name
+            }).then((info) => {
               if (info.message) {
                 this.message = info.message
                 this.status = 'success'
@@ -207,37 +175,37 @@ export default {
             })
           }
           if (this.selectedMode === 'Updating') {
-            color.id = this.activeId
-            this.$store.dispatch('UPDATE_COLOR', color).then((info) => {
+            this.$store.dispatch('UPDATE_SIZE', {
+              size: this.name,
+              id: this.activeId
+            }).then((info) => {
               if (info.message) {
                 this.message = info.message
                 this.status = 'success'
               }
             })
           }
-          this.colorDialog = false
+          this.sizeDialog = false
         }
       })
     },
   },
   computed:{
-      error(){
-        return this.$store.getters.getError
-      },
-      processing() {
-        return this.$store.getters.getProcessing
-      },
-      url() {
-        return this.transliterate(this.name)
-      },
-      colors(){
-        return this.$store.getters.colors
-      }
+    error(){
+      return this.$store.getters.getError
+    },
+    processing() {
+      return this.$store.getters.getProcessing
+    },
+
+    sizes(){
+      return this.$store.getters.sizes
+    }
   },
   created() {
-    this.$store.dispatch('GET_COLORS')
-    this.modesDescription.set("Adding", "Добавить цвет")
-    this.modesDescription.set("Updating", "Изменить цвет");
+    this.$store.dispatch('GET_SIZES')
+    this.modesDescription.set("Adding", "Добавить размер")
+    this.modesDescription.set("Updating", "Изменить размер");
   },
   watch:{
     error(){
@@ -287,7 +255,9 @@ export default {
   border: 1px solid;
   border-radius: 50%;
 }
-
+.col-sm-3.col {
+  min-height: 140px;
+}
 .blur {
   z-index: 2;
   top: 0;

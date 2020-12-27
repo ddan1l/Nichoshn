@@ -1,7 +1,7 @@
 <template>
   <v-container style="background-color: #fafafa !important;" class="align-start pa-0" fluid fill-height>
     <v-row style="height: 100%">
-      <v-col sm="2" class="py-0 pr-0" style="height: 100%; position: fixed">
+      <v-col sm="2" class="py-0 pr-0" style="height: 100%; position: fixed; z-index: 3">
         <v-card height="100%">
           <v-list>
             <v-list-item class="px-3 py-1">
@@ -36,9 +36,12 @@
 </template>
 
 <script>
-import Create from "@/components/Admin/Create";
-import Categories from "@/components/Admin/Categories";
-import Colors from "@/components/Admin/Colors";
+import Create from "@/components/Admin/Create"
+import Categories from "@/components/Admin/Categories"
+import Colors from "@/components/Admin/Colors"
+import Sizes from "@/components/Admin/Sizes"
+import Components from "@/components/Admin/Components";
+
 export default {
   name: "Admin",
   data(){
@@ -46,11 +49,13 @@ export default {
       drawer: true,
       activeComponent: '',
       items: [
-        { title: 'Статистика', icon: 'far fa-chart-bar',},
-        { title: 'Просмотр', icon: 'far fa-address-book' },
-        { title: 'Добавить товар', icon: 'fas fa-plus', content: Create },
-        { title: 'Категории', icon: '$layerGroup', content: Categories },
-        { title: 'Цвета', icon: 'fas fa-palette', content: Colors },
+        { title: 'Статистика', icon: 'far fa-chart-bar'},
+        { title: 'Просмотр', icon: 'far fa-eye' },
+        { title: 'Добавить товар', icon: '$filePlus', content: Create },
+        { title: 'Категории', icon: '$books', content: Categories },
+        { title: 'Цвета', icon: '$palette', content: Colors },
+        { title: 'Размеры', icon: '$ruler', content: Sizes },
+        { title: 'Материалы', icon: '$components', content: Components },
       ],
       mini: true,
     }
@@ -63,6 +68,9 @@ export default {
 }
 </script>
 <style scoped>
+/deep/.v-icon.notranslate.far.fa-eye.theme--light {
+  width: 24px !important;
+}
 /deep/path {
   fill: #757575 !important;
 }

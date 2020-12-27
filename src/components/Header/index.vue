@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar
-        style="z-index: 2"
+        style="z-index: 4"
         absolute
         :extended = "!isHidden"
         :style="{position: $route.path==='/admin'?  'fixed': undefined}"
@@ -54,7 +54,6 @@
           </v-tooltip>
         </v-container>
       </div>
-
       <template v-if="!isHidden" class="hidden-sm-and-down red--text" v-slot:extension>
         <v-container style="display: flex; justify-content: space-between; max-width: min-content">
           <v-btn height="48" tile class="sectionLink" text to="/">

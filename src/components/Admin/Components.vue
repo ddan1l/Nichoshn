@@ -1,26 +1,14 @@
 <template>
   <v-row>
-    <v-dialog persistent v-model="colorDialog" max-width="600">
+    <v-dialog persistent v-model="componentDialog" max-width="600">
       <v-card class="px-5 pt-4">
         <v-col sm="12" >
-          <div class="text-center headline">
+          <div class="text-center headline mb-2">
             {{modesDescription.get(selectedMode)}}
           </div>
         </v-col>
         <validation-observer ref="observer">
           <v-form>
-            <v-row>
-              <v-col sm="6">
-                <v-color-picker
-                    v-model="hex"
-                    class="mb-7"
-                    elevation="2"
-                    dot-size="29"
-                    hide-mode-switch
-                    mode="hexa"
-                ></v-color-picker>
-              </v-col>
-              <v-col sm="6">
                 <validation-provider v-slot="{errors}" name="Название" rules="required">
                   <v-text-field
                       v-model="name"
@@ -37,17 +25,12 @@
                     readonly
                     placeholder="URL"
                 ></v-text-field>
-
-                <v-btn class="mr-2 ml-6 mb-5" color="grey darken-1" text @click="colorDialog = false">
-                  Отмена
-                </v-btn>
-                <v-btn class="mb-5" @click.prevent="handleColor" outlined color="black darken-1">
-                  Применить
-                </v-btn>
-
-              </v-col>
-            </v-row>
-
+            <v-btn class="mb-5" @click.prevent="handleComponent" outlined color="black darken-1">
+              Применить
+            </v-btn>
+            <v-btn class="mr-2 ml-3 mb-5" color="grey darken-1" text @click="componentDialog = false">
+              Отмена
+            </v-btn>
           </v-form>
         </validation-observer>
       </v-card>
@@ -55,14 +38,14 @@
     <v-dialog persistent v-model="deleteDialog" max-width="400">
       <v-card>
         <v-card-title class="headline mb-3">
-          Удалить данный цвет?
+          Удалить данный компонент?
         </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn text @click="deleteDialog = false">
             Нет
           </v-btn>
-          <v-btn outlined @click="deleteColor()">
+          <v-btn outlined @click="deleteComponent">
             Да
           </v-btn>
         </v-card-actions>
@@ -71,7 +54,7 @@
     <SnackBar :message="message" :status="status"/>
     <v-col sm="12">
       <div style="display: flex">
-        <div style="width: min-content" class="title font-weight-regular">Цвета</div>
+        <div style="width: min-content" class="title font-weight-regular">Материалы</div>
         <v-spacer></v-spacer>
         <v-btn @click="handleAddingButton()" class="mr-10" rounded outlined>
           Добавить
@@ -88,7 +71,7 @@
           color="black"
       ></v-progress-circular>
     </div>
-    <v-col v-else style="transition: 1s" sm="3" v-for="(item, index) in colors" :key="index">
+    <v-col v-else style="transition: 1s" sm="3" v-for="(item, index) in components" :key="index">
       <v-hover>
         <template v-slot:default="{hover}">
           <v-card height="100%" :class="`elevation-${hover ? 24 : 6}`" class="px-9 transition-swing pt-4 pb-3">
@@ -111,9 +94,7 @@
                 </v-btn>
               </div>
             </v-expand-transition>
-            <div style="font-size: 22px !important" class="title text-center mb-1">{{ item.color }}</div>
-            <div class="body-1 text-center mb-2">{{ item.hex }}</div>
-            <div :style="{backgroundColor: item.hex}" class="color  mb-2"></div>
+            <div style="font-size: 22px !important" class="title text-center mb-1">{{ item.component }}</div>
             <div class="subtitle-1 grey--text text--darken-3 text-center">URL: {{ item.url }}</div>
           </v-card>
         </template>
@@ -136,7 +117,7 @@ extend('required', {
 })
 
 export default {
-  name: "Colors",
+  name: "Components",
   components:{
     SnackBar,
     ValidationObserver,
@@ -149,57 +130,53 @@ export default {
       message: '',
       status: 'error',
       modesDescription: new Map(),
-      colorDialog: false,
+      componentDialog: false,
       deleteDialog: false,
       activeId: '',
       activeIndex: '',
       name: '',
-      hex: ''
     }
   },
   methods: {
     handleAddingButton() {
-      this.colorDialog = true
+      this.componentDialog = true
       this.selectedMode = 'Adding';
       this.name = '';
-      this.hex = '';
       if (this.$refs.observer) {
         this.$refs.observer.reset()
       }
     },
     handleUpdatingButton(item, index) {
-      this.colorDialog = true;
+      this.componentDialog = true;
       this.activeIndex = index
       this.selectedMode = 'Updating';
       this.activeId = item.id;
-      this.name = item.color;
-      this.hex = item.hex;
+      this.name = item.component;
     },
     handleDeletingButton(item, index) {
       this.deleteDialog = true
       this.activeId = item.id
       this.activeIndex = index
     },
-    deleteColor() {
+    deleteComponent() {
       this.deleteDialog = false
-      this.$store.dispatch('DELETE_COLOR', this.activeId).then((info) => {
+      this.$store.dispatch('DELETE_COMPONENT', this.activeId).then((info) => {
         if (info.message) {
           this.message = info.message
           this.status = 'success'
         }
       })
     },
-    handleColor() {
+    handleComponent() {
       this.$refs.observer.validate().then(result => {
         if (result) {
-          let color = {
-            color: this.name,
+          let component = {
+            component: this.name,
             url: this.url,
-            hex: this.hex,
             id: ''
           }
           if (this.selectedMode === 'Adding') {
-            this.$store.dispatch('ADD_COLOR', color).then((info) => {
+            this.$store.dispatch('ADD_COMPONENT', component).then((info) => {
               if (info.message) {
                 this.message = info.message
                 this.status = 'success'
@@ -207,37 +184,37 @@ export default {
             })
           }
           if (this.selectedMode === 'Updating') {
-            color.id = this.activeId
-            this.$store.dispatch('UPDATE_COLOR', color).then((info) => {
+            component.id = this.activeId
+            this.$store.dispatch('UPDATE_COMPONENT', component).then((info) => {
               if (info.message) {
                 this.message = info.message
                 this.status = 'success'
               }
             })
           }
-          this.colorDialog = false
+          this.componentDialog = false
         }
       })
     },
   },
   computed:{
-      error(){
-        return this.$store.getters.getError
-      },
-      processing() {
-        return this.$store.getters.getProcessing
-      },
-      url() {
-        return this.transliterate(this.name)
-      },
-      colors(){
-        return this.$store.getters.colors
-      }
+    error(){
+      return this.$store.getters.getError
+    },
+    processing() {
+      return this.$store.getters.getProcessing
+    },
+    url() {
+      return this.transliterate(this.name)
+    },
+    components(){
+      return this.$store.getters.components
+    }
   },
   created() {
-    this.$store.dispatch('GET_COLORS')
-    this.modesDescription.set("Adding", "Добавить цвет")
-    this.modesDescription.set("Updating", "Изменить цвет");
+    this.$store.dispatch('GET_COMPONENTS')
+    this.modesDescription.set("Adding", "Добавить материал")
+    this.modesDescription.set("Updating", "Изменить материал");
   },
   watch:{
     error(){
@@ -295,5 +272,8 @@ export default {
   width: 100%;
   height: 100%;
   position: absolute;
+}
+.col-sm-3.col {
+  min-height: 140px;
 }
 </style>

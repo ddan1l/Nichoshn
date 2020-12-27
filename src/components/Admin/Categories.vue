@@ -105,9 +105,7 @@
             </v-expand-transition>
             <div style="font-size: 22px !important" class="title text-center mb-3 ">{{ item.category }}</div>
             <div class="body-1 text-center mb-5">{{ item.description }}</div>
-            <div>
-              <div class="subtitle-1 grey--text text--darken-3 text-center">URL: {{ item.categoryURL }}</div>
-            </div>
+            <div class="subtitle-1 grey--text text--darken-3 text-center">URL: {{ item.categoryURL }}</div>
           </v-card>
         </template>
       </v-hover>
@@ -142,8 +140,8 @@ export default {
       modesDescription: new Map(),
       categoryDialog: false,
       deleteDialog: false,
-      activeCategoryId: '',
-      activeCategoryIndex: '',
+      activeId: '',
+      activeIndex: '',
       name: '',
       description: ''
     }
@@ -160,20 +158,20 @@ export default {
     },
     handleUpdatingButton(item, index) {
       this.categoryDialog = true;
-      this.activeCategoryIndex = index
+      this.activeIndex = index
       this.selectedMode = 'Updating';
-      this.activeCategoryId = item.id;
+      this.activeId = item.id;
       this.name = item.category;
       this.description = item.description;
     },
     handleDeletingButton(item, index) {
       this.deleteDialog = true
-      this.activeCategoryId = item.id
-      this.activeCategoryIndex = index
+      this.activeId = item.id
+      this.activeIndex = index
     },
     deleteCategory() {
       this.deleteDialog = false
-      this.$store.dispatch('DELETE_CATEGORY', this.activeCategoryId).then((info) => {
+      this.$store.dispatch('DELETE_CATEGORY', this.activeId).then((info) => {
         if (info.message) {
           this.message = info.message
           this.status = 'success'
@@ -198,7 +196,7 @@ export default {
             })
           }
           if (this.selectedMode === 'Updating') {
-            category.id = this.activeCategoryId
+            category.id = this.activeId
             this.$store.dispatch('UPDATE_CATEGORY', category).then((info) => {
               if (info.message) {
                 this.message = info.message
@@ -240,7 +238,7 @@ export default {
 </script>
 
 <style scoped>
-/deep/ .v-card__progress {
+.v-card__progress {
   top: 0 !important;
   position: absolute !important;
   height: 5px !important;
@@ -266,10 +264,10 @@ export default {
   justify-content: space-evenly;
 }
 .progress{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
 }
 .blur {
   z-index: 2;
@@ -278,6 +276,5 @@ export default {
   width: 100%;
   height: 100%;
   position: absolute;
-
 }
 </style>
