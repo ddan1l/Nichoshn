@@ -14,13 +14,6 @@ Vue.use(VueCookies)
 Vue.use(VueKonva)
 Vue.use(VNus)
 Vue.config.productionTip = false
-Vue.mixin({
-  methods: {
-    globalHelper: function () {
-      alert("Hello world")
-    },
-  },
-})
 
 const firebaseApp =  firebase.initializeApp(firebaseConfig);
 Vue.prototype.$db = firebaseApp.firestore()

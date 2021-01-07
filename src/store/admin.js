@@ -55,6 +55,20 @@ export default{
         },
     },
     actions: {
+        DELETE_IMAGE({commit}, payload) {
+            commit('SET_PROCESSING', true)
+            commit('CLEAR_ERROR')
+            return new Promise(resolve => {
+                firebase.storage().refFromURL(payload).delete().then(() => {
+                   resolve()
+                   commit('SET_PROCESSING', false)
+                })
+                .catch((error) => {
+                   commit('SET_ERROR', error)
+                })
+                .finally(() => commit('SET_PROCESSING', false))
+            })
+        },
         SAVE_IMAGES({commit}, payload){
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
@@ -73,36 +87,114 @@ export default{
                             refs.push({
                                 imageURL: downloadURL
                             })
+                            if (payload.indexOf(file) === payload.length -1){
+                                resolve(refs)
+                                commit('SET_PROCESSING', false)
+                            }
                         });
                     })
                     .catch(error =>{
                         commit('SET_ERROR', error)
                     })
                 }
-                setTimeout(()=>{
-                    resolve(refs)
-                    commit('SET_PROCESSING', false)
-                }, 1000)
+            })
+        },
+        SAVE_PRODUCT({commit}, payload){
+            commit('SET_PROCESSING', true)
+            return new Promise(resolve => {
+                Vue.prototype.$db.collection(payload.categoryURL).doc(payload.url).set(payload)
+                .then(() => {
+                    resolve({
+                        message: 'Документ успешно записан'
+                    })
+                })
+                .catch((error) => {
+                    commit('SET_ERROR', error)
+                })
+                .finally(() => commit('SET_PROCESSING', false))
             })
         },
 
+        ADD_FILTER({commit}, payload){
+            commit('SET_PROCESSING', true)
+            let colors = []
+            let components = []
+            let sizes = []
+            let minPrice = 0
+            let maxPrice = 0
+            Vue.prototype.$db.collection(payload.category).doc('filter').get()
+                .then((doc) => {
+                if (doc.exists) {
+                    colors = doc.data().colors
+                    components = doc.data().components
+                    sizes = doc.data().sizes
+                    minPrice = doc.data().minPrice
+                    maxPrice = doc.data().maxPrice
+                    const key = 'id';
+                    if (payload.price < minPrice){
+                        Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                            minPrice: payload.price
+                        }, {merge: true}).then()
+                    }
+                    if (payload.price > maxPrice){
+                        Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                            maxPrice: payload.price
+                        }, {merge: true}).then()
+                    }
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        colors: [...new Map(colors.concat(payload.colors).map(item => [item[key], item])).values()]
+                    }, {merge: true}).then()
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        components: [...new Map(components.concat(payload.components).map(item => [item[key], item])).values()]
+                    }, {merge: true}).then()
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        sizes: [...new Map(sizes.concat(payload.sizes).map(item => [item[key], item])).values()]
+                    }, {merge: true}).then()
+                }
+                else{
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        colors: payload.colors
+                    }, {merge: true}).then()
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        components: payload.components
+                    }, {merge: true}).then()
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        sizes: payload.sizes
+                    }, {merge: true}).then()
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        minPrice: payload.price
+                    }, {merge: true}).then()
+                    Vue.prototype.$db.collection(payload.category).doc('filter').set({
+                        maxPrice: payload.price
+                    }, {merge: true}).then()
+                }
+
+            })
+            .catch((error) => {
+             commit('SET_ERROR', error)
+            })
+            .finally(() =>  commit('SET_PROCESSING', false))
+        },
+        // eslint-disable-next-line no-unused-vars
         GET_COMPONENTS({commit}){
             commit('SET_PROCESSING', true)
-            Vue.prototype.$db.collection("components").get().then((querySnapshot)=>{
+            Vue.prototype.$db.collection("components").get()
+            .then((querySnapshot)=>{
                 let components = []
                 querySnapshot.forEach((doc) => {
                     let data = doc.data()
                     data.id = doc.id
                     components.push(data)
-                });
-                setTimeout(()=>{
-                    commit('SET', {
-                        key: 'components',
-                        value: components
-                    })
-                    commit('SET_PROCESSING', false)
-                }, 1000)
+                })
+                commit('SET', {
+                    key: 'components',
+                    value: components
+                })
             })
+            .catch(error =>{
+                commit('SET_ERROR', error)
+            })
+            .finally(() =>  commit('SET_PROCESSING', false))
         },
         ADD_COMPONENT({commit}, payload){
             commit('SET_PROCESSING', true)
@@ -118,24 +210,18 @@ export default{
                             key: 'components',
                             value: payload
                         })
-                        setTimeout(()=>{
-                            resolve({
-                                message: 'Документ записан: ' + docRef.id,
-                            })
-                        }, 500)
+                        resolve({
+                            message: 'Документ записан: ' + docRef.id,
+                        })
                     })
                     .catch((error) => {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
+                        resolve({
+                            message: null,
+                        })
                         commit('SET_ERROR', error)
                     })
                     .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
+                        commit('SET_PROCESSING', false)
                     })
             })
         },
@@ -148,29 +234,22 @@ export default{
                     url: payload.url,
                 })
                     .then(() => {
-                        setTimeout(()=>{
-                            commit('UPDATE', {
-                                key: 'components',
-                                value: payload
-                            })
-                            resolve({
-                                message: 'Документ обновлен: ' + payload.id
-                            })
-                        }, 500)
-
+                        commit('UPDATE', {
+                            key: 'components',
+                            value: payload
+                        })
+                        resolve({
+                            message: 'Документ обновлен: ' + payload.id
+                        })
                     })
                     .catch((error) =>  {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
+                        resolve({
+                            message: null,
+                        })
                         commit('SET_ERROR', error)
                     })
                     .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
+                        commit('SET_PROCESSING', false)
                     })
             })
         },
@@ -179,30 +258,24 @@ export default{
             commit('CLEAR_ERROR')
             return new Promise(resolve => {
                 Vue.prototype.$db.collection("components").doc(payload).delete()
-                    .then(() => {
-                        commit('DELETE',  {
-                            key: 'components',
-                            value: payload
-                        })
-                        setTimeout(()=>{
-                            resolve({
-                                message: 'Документ успешно удален'
-                            })
-                        }, 500)
+                .then(() => {
+                    commit('DELETE',  {
+                        key: 'components',
+                        value: payload
                     })
-                    .catch((error) => {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
-                        commit('SET_ERROR', error)
+                    resolve({
+                        message: 'Документ успешно удален'
                     })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
+                })
+                .catch((error) => {
+                    resolve({
+                        message: null,
                     })
+                    commit('SET_ERROR', error)
+                })
+                .finally(() => {
+                    commit('SET_PROCESSING', false)
+                })
             })
 
         },
@@ -216,13 +289,16 @@ export default{
                     data.id = doc.id
                     sizes.push(data)
                 });
-                setTimeout(()=>{
-                    commit('SET', {
-                        key: 'sizes',
-                        value: sizes
-                    })
-                    commit('SET_PROCESSING', false)
-                }, 1000)
+                commit('SET', {
+                    key: 'sizes',
+                    value: sizes
+                })
+            })
+            .catch((error) =>{
+                commit('SET_ERROR', error)
+            })
+            .finally(()=>{
+                commit('SET_PROCESSING', false)
             })
         },
         ADD_SIZE({commit}, payload){
@@ -232,31 +308,22 @@ export default{
                 Vue.prototype.$db.collection("sizes").add({
                     size: payload.size,
                 })
-                    .then((docRef) => {
-                        payload.id =  docRef.id
-                        commit('ADD', {
-                            key: 'sizes',
-                            value: payload
-                        })
-                        setTimeout(()=>{
-                            resolve({
-                                message: 'Документ записан: ' + docRef.id,
-                            })
-                        }, 500)
+                .then((docRef) => {
+                    payload.id =  docRef.id
+                    commit('ADD', {
+                        key: 'sizes',
+                        value: payload
                     })
-                    .catch((error) => {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
-                        commit('SET_ERROR', error)
+                    resolve({
+                        message: 'Документ записан: ' + docRef.id,
                     })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
-                    })
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
+                })
             })
         },
         UPDATE_SIZE({commit}, payload){
@@ -266,31 +333,21 @@ export default{
                 Vue.prototype.$db.collection("sizes").doc(payload.id).set({
                     size: payload.size,
                 })
-                    .then(() => {
-                        setTimeout(()=>{
-                            commit('UPDATE', {
-                                key: 'sizes',
-                                value: payload
-                            })
-                            resolve({
-                                message: 'Документ обновлен: ' + payload.id
-                            })
-                        }, 500)
-
+                .then(() => {
+                    commit('UPDATE', {
+                        key: 'sizes',
+                        value: payload
                     })
-                    .catch((error) =>  {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
-                        commit('SET_ERROR', error)
+                    resolve({
+                        message: 'Документ обновлен: ' + payload.id
                     })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
-                    })
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
+                })
             })
         },
         DELETE_SIZE({commit}, payload){
@@ -303,24 +360,15 @@ export default{
                             key: 'sizes',
                             value: payload
                         })
-                        setTimeout(()=>{
-                            resolve({
-                                message: 'Документ успешно удален'
-                            })
-                        }, 500)
+                        resolve({
+                            message: 'Документ успешно удален'
+                        })
                     })
-                    .catch((error) => {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
+                    .catch((error) =>{
                         commit('SET_ERROR', error)
                     })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
+                    .finally(()=>{
+                        commit('SET_PROCESSING', false)
                     })
             })
 
@@ -335,13 +383,16 @@ export default{
                     data.id = doc.id
                     colors.push(data)
                 });
-                setTimeout(()=>{
-                    commit('SET', {
-                        key: 'colors',
-                        value: colors
-                    })
-                    commit('SET_PROCESSING', false)
-                }, 1000)
+                commit('SET', {
+                    key: 'colors',
+                    value: colors
+                })
+            })
+            .catch((error) =>{
+                commit('SET_ERROR', error)
+            })
+            .finally(()=>{
+                commit('SET_PROCESSING', false)
             })
         },
         ADD_COLOR({commit}, payload){
@@ -353,31 +404,22 @@ export default{
                     url: payload.url,
                     hex: payload.hex,
                 })
-                    .then((docRef) => {
-                        payload.id =  docRef.id
-                        commit('ADD', {
-                            key: 'colors',
-                            value: payload
-                        })
-                        setTimeout(()=>{
-                            resolve({
-                                message: 'Документ записан: ' + docRef.id,
-                            })
-                        }, 500)
+                .then((docRef) => {
+                    payload.id =  docRef.id
+                    commit('ADD', {
+                        key: 'colors',
+                        value: payload
                     })
-                    .catch((error) => {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
-                        commit('SET_ERROR', error)
+                    resolve({
+                        message: 'Документ записан: ' + docRef.id,
                     })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
-                    })
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
+                })
             })
         },
         UPDATE_COLOR({commit}, payload){
@@ -389,31 +431,21 @@ export default{
                     url: payload.url,
                     hex: payload.hex,
                 })
-                    .then(() => {
-                        setTimeout(()=>{
-                            commit('UPDATE', {
-                                key: 'colors',
-                                value: payload
-                            })
-                            resolve({
-                                message: 'Документ обновлен: ' + payload.id
-                            })
-                        }, 500)
-
+                .then(() => {
+                    commit('UPDATE', {
+                        key: 'colors',
+                        value: payload
                     })
-                    .catch((error) =>  {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
-                        commit('SET_ERROR', error)
+                    resolve({
+                        message: 'Документ обновлен: ' + payload.id
                     })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
-                    })
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
+                })
             })
         },
         DELETE_COLOR({commit}, payload){
@@ -421,61 +453,62 @@ export default{
             commit('CLEAR_ERROR')
             return new Promise(resolve => {
                 Vue.prototype.$db.collection("colors").doc(payload).delete()
-                    .then(() => {
-                        commit('DELETE',  {
-                            key: 'colors',
-                            value: payload
+                .then(() => {
+                    commit('DELETE',  {
+                        key: 'colors',
+                        value: payload
+                    })
+                    setTimeout(()=>{
+                        resolve({
+                            message: 'Документ успешно удален'
                         })
-                        setTimeout(()=>{
-                            resolve({
-                                message: 'Документ успешно удален'
-                            })
-                        }, 500)
-                    })
-                    .catch((error) => {
-                        setTimeout(()=>{
-                            resolve({
-                                message: null,
-                            })
-                        }, 500)
-                        commit('SET_ERROR', error)
-                    })
-                    .finally(() => {
-                        setTimeout(()=>{
-                            commit('SET_PROCESSING', false)
-                        }, 500)
-                    })
+                    }, 500)
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
+                })
             })
 
         },
 
         GET_CATEGORIES({commit}){
             commit('SET_PROCESSING', true)
-            Vue.prototype.$db.collection("categories").get().then((querySnapshot)=>{
-                let categories = []
-                querySnapshot.forEach((doc) => {
-                    let data = doc.data()
-                    data.id = doc.id
-                    categories.push(data)
-                });
-                setTimeout(()=>{
-                    let payload = {
-                        key: 'categories',
-                        value: categories
-                    }
+            Vue.prototype.$db.collection("categories").get()
+            .then((querySnapshot)=>{
+            let categories = []
+            querySnapshot.forEach((doc) => {
+                let data = doc.data()
+                data.id = doc.id
+                categories.push(data)
+            });
+                let payload = {
+                    key: 'categories',
+                    value: categories
+                }
+                if (payload){
                     commit('SET', payload)
-                    commit('SET_PROCESSING', false)
-                }, 1000)
+                }
+            })
+            .catch((error) =>{
+                commit('SET_ERROR', error)
+            })
+            .finally(()=>{
+                commit('SET_PROCESSING', false)
             })
         },
         ADD_CATEGORY({commit}, payload){
             commit('SET_PROCESSING', true)
             commit('CLEAR_ERROR')
             return new Promise(resolve => {
+                Vue.prototype.$db.collection(payload.categoryURL).doc('init').set({}).then()
                 Vue.prototype.$db.collection("categories").add({
                     category: payload.category,
                     categoryURL: payload.categoryURL,
                     description: payload.description,
+                    image: payload.image
                 })
                 .then((docRef) => {
                     payload.id =  docRef.id
@@ -483,24 +516,15 @@ export default{
                         key: 'categories',
                         value: payload
                     })
-                    setTimeout(()=>{
-                        resolve({
-                            message: 'Документ записан: ' + docRef.id,
-                        })
-                    }, 500)
+                    resolve({
+                        message: 'Документ записан: ' + docRef.id,
+                    })
                 })
-                .catch((error) => {
-                    setTimeout(()=>{
-                        resolve({
-                            message: null,
-                        })
-                    }, 500)
+                .catch((error) =>{
                     commit('SET_ERROR', error)
                 })
-                .finally(() => {
-                    setTimeout(()=>{
-                        commit('SET_PROCESSING', false)
-                    }, 500)
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
                 })
             })
         },
@@ -512,71 +536,100 @@ export default{
                     category: payload.category,
                     categoryURL: payload.categoryURL,
                     description: payload.description,
+                    image: payload.image
                 })
                 .then(() => {
-                    setTimeout(()=>{
-                        commit('UPDATE', {
-                            key: 'categories',
-                            value: payload
-                        })
-                        resolve({
-                            message: 'Документ обновлен: ' + payload.id
-                        })
-                    }, 500)
-
-                })
-                .catch((error) =>  {
-                    setTimeout(()=>{
-                        resolve({
-                            message: null,
-                        })
-                    }, 500)
-                    commit('SET_ERROR', error)
-                })
-                .finally(() => {
-                    setTimeout(()=>{
-                        commit('SET_PROCESSING', false)
-                    }, 500)
-                })
-            })
-        },
-        DELETE_CATEGORY({commit}, payload){
-            commit('SET_PROCESSING', true)
-            commit('CLEAR_ERROR')
-            return new Promise(resolve => {
-                Vue.prototype.$db.collection("categories").doc(payload).delete()
-                .then(() => {
-                    commit('DELETE',  {
+                    commit('UPDATE', {
                         key: 'categories',
                         value: payload
                     })
-                    setTimeout(()=>{
-                        resolve({
-                            message: 'Документ успешно удален'
-                        })
-                    }, 500)
+                    resolve({
+                        message: 'Документ обновлен: ' + payload.id
+                    })
                 })
-                .catch((error) => {
-                    setTimeout(()=>{
-                        resolve({
-                            message: null,
-                        })
-                    }, 500)
+                .catch((error) =>  {
+                    resolve({
+                        message: null,
+                    })
                     commit('SET_ERROR', error)
                 })
                 .finally(() => {
-                    setTimeout(()=>{
+                    commit('SET_PROCESSING', false)
+                })
+            })
+        },
+        DELETE_CATEGORY({commit, dispatch}, payload){
+            commit('SET_PROCESSING', true)
+            commit('CLEAR_ERROR')
+            return new Promise(resolve => {
+                Vue.prototype.$db.collection("categories").doc(payload).get()
+                    .then(doc => {
+                        dispatch('DELETE_IMAGE', doc.data().image).then(()=>{
+                            Vue.prototype.$db.collection(doc.data().categoryURL)
+                                .get()
+                                .then(res => {
+                                    if (res!==undefined){
+                                        res.forEach(element => {
+                                            element.ref.delete().then();
+                                        })
+                                    }
+                                    Vue.prototype.$db.collection("categories").doc(payload).delete()
+                                    .then(() => {
+                                        commit('DELETE',  {
+                                            key: 'categories',
+                                            value: payload
+                                        })
+                                        resolve({
+                                            message: 'Категория успешно удалена'
+                                        })
+                                    })
+                                    .catch((error) => {
+                                        commit('SET_ERROR', error)
+                                    })
+                                })
+                            .catch((error) =>{
+                                commit('SET_ERROR', error)
+                            })
+                        })
+                        .catch((error) =>{
+                            commit('SET_ERROR', error)
+                        })
+                    })
+                    .catch((error) =>{
+                        commit('SET_ERROR', error)
+                    })
+                    .finally(()=>{
                         commit('SET_PROCESSING', false)
-                    }, 500)
+                    })
+                })
+
+        },
+
+        IS_URL_EXISTS({commit}, payload){
+          commit('SET_PROCESSING', true)
+            return new Promise(resolve => {
+                Vue.prototype.$db.collection(payload.category).doc(payload.product).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        resolve(true)
+                    } else {
+                        resolve(false)
+                    }
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
+                    commit('SET_PROCESSING', false)
                 })
             })
 
         },
-
         CHECK_ADMIN({commit}, payload){
             commit('SET_PROCESSING', true)
             return new Promise(resolve => {
-                Vue.prototype.$db.collection("users").doc(payload).get().then((doc)=>{
+                Vue.prototype.$db.collection("users").doc(payload).get()
+                .then((doc)=>{
                     if (doc.exists){
                         let data = doc.data();
                         if (data.isAdmin){
@@ -586,6 +639,11 @@ export default{
                             resolve(false)
                         }
                     }
+                })
+                .catch((error) =>{
+                    commit('SET_ERROR', error)
+                })
+                .finally(()=>{
                     commit('SET_PROCESSING', false)
                 })
             })

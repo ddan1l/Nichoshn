@@ -12,10 +12,15 @@ const routes = [
     component: () => import('../views/Home')
   },
   {
-    path: '/clothes/:categoryURL',
+    path: '/categories',
+    name: 'Categories',
+    component: () => import('../views/Categories')
+  },
+  {
+    path: '/categories/:categoryURL',
     props: true,
     name: 'Clothes',
-    component: () => import('../views/Сlothes')
+    component: () => import('../views/Products')
   },
   {
     path: '/clothes/:categoryURL/:productURL',
@@ -68,7 +73,6 @@ const router = new VueRouter({
 
 
 router.beforeEach((to, from, next) => {
-
     if (to.matched.some(route => route.meta.authRequired)){
       Store.dispatch('INIT_AUTH').then(user=>{
           if (!user || !Store.getters.isEmailVerified){

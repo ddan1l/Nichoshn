@@ -91,7 +91,7 @@ export default {
   },
   methods:{
     getDiscount(discount, price){
-      return price -  discount * price
+      return Math.floor( price - price * discount / 100)
     },
     toBasket(){
       if (this.selectedSize === null){

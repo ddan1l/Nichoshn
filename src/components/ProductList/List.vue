@@ -1,10 +1,10 @@
 <template>
   <div>
   <transition-group class="layout" style="flex-wrap: wrap"  name="product-animation" tag="div">
-    <v-flex class="product-animation-item pl-2 mt-5 pr-2"  v-for="product in products" :key="product.id" xs4>
+    <v-flex class="product-animation-item pl-2 mt-5 pr-2"  v-for="product in products" :key="product.url" xs3>
       <v-card class="product-card" elevation="0">
         <router-link :to="{path: $route.path +'/' + product.url, params: {productURL: product.url}}">
-          <v-img min-height="240" style="cursor: pointer" @mouseenter="showSecondImage($event, product.images)" @mouseleave="showFirstImage($event, product.images)" :src="product.images[0].imageURL">
+          <v-img height="300" style="cursor: pointer" @mouseenter="showSecondImage($event, product.images)" @mouseleave="showFirstImage($event, product.images)" :src="product.images[0].imageURL">
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="black lighten-5"></v-progress-circular>
@@ -66,7 +66,7 @@ export default {
   },
   methods:{
     getDiscount(discount, price){
-      return price -  discount * price
+      return Math.floor( price - price * discount / 100)
     },
     toWishlist(product) {
       if (this.wishlist.includes(product)){

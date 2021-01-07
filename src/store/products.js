@@ -1,452 +1,21 @@
 import Vue from 'vue'
 export default {
     state:{
-        categoriesInfo:[
-            {
-                category: 'Футболки',
-                categoryURL: 'futbolki',
-                title: 'Непревойденные футболки хорошего качество на любой вкус и цвет'
-            },
-            {
-                category: 'Шопперы',
-                categoryURL: 'shoppers',
-                title: 'Широкая цветовая гамма и огромное разнообразие балдежных шопперов. Компактные. Вместительные. Великолепные. То, что нужно для совмеменного ценителя постмодерна'
-            }
-        ],
+        products: [],
+        filters: [],
         wishlist: [],
-        clothing:[
-            {
-                id: 'asdwadwadasdaw',
-                title: 'Slayer Hell Awaits',
-                url: 'slayer-hell-awaits',
-                category: 'Футболки',
-                categoryURL: 'futbolki',
-                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Зеленый',
-                        hex: '#0d7e1f',
-                        url: 'green'
-                    }
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: 'XSSSSL'
-                    },
-                    {
-                        size: 'XSKLK'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Лобковые волосы',
-                            url: 'lobkovie-volosi'
-                        },
-                        {
-                            component: 'Древесный гном',
-                            url: 'drevecni-gnom'
-                        }
-                    ],
-                    description: 'Древесный гном, Лобковые волосы'
-                },
-                price: 170,
-                discount: null
-            },
-            {
-                id: 'asdwadwsadasdaw',
-                title: 'Slayer Hell Awaits',
-                url: 'slayer-hell-awaits',
-                category: 'Футболки',
-                categoryURL: 'futbolki',
-                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Зеленый',
-                        hex: '#0d7e1f',
-                        url: 'green'
-                    }
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: 'XSSSSL'
-                    },
-                    {
-                        size: 'XSKLK'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Лобковые волосы',
-                            url: 'lobkovie-volosi'
-                        },
-                        {
-                            component: 'Древесный гном',
-                            url: 'drevecni-gnom'
-                        }
-                    ],
-                    description: 'Древесный гном, Лобковые волосы'
-                },
-                price: 170,
-                discount: null
-            },
-            {
-                id: 'asdwadwadasssdaw',
-                title: 'Slayer Hell Awaits',
-                url: 'slayer-hell-awaits',
-                category: 'Футболки',
-                categoryURL: 'futbolki',
-                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Зеленый',
-                        hex: '#0d7e1f',
-                        url: 'green'
-                    }
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: 'XSSSSL'
-                    },
-                    {
-                        size: 'XSKLK'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Лобковые волосы',
-                            url: 'lobkovie-volosi'
-                        },
-                        {
-                            component: 'Древесный гном',
-                            url: 'drevecni-gnom'
-                        }
-                    ],
-                    description: 'Древесный гном, Лобковые волосы'
-                },
-                price: 170,
-                discount: null
-            },
-            {
-                id: 'asdwadwsasdasdaw',
-                title: 'Slayer Hell Awaits',
-                url: 'slayer-hell-awaits',
-                category: 'Футболки',
-                categoryURL: 'futbolki',
-                description: 'Международный преступник Итачи Учихаaaaaaaaaaaaaaaaaaaaaaaaaa',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Зеленый',
-                        hex: '#0d7e1f',
-                        url: 'green'
-                    }
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: 'XSSSSL'
-                    },
-                    {
-                        size: 'XSKLK'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Лобковые волосы',
-                            url: 'lobkovie-volosi'
-                        },
-                        {
-                            component: 'Древесный гном',
-                            url: 'drevecni-gnom'
-                        }
-                    ],
-                    description: 'Древесный гном, Лобковые волосы'
-                },
-                price: 170,
-                discount: null
-            },
-            {
-                id: 'asdwadwadassdaw',
-                title: 'Slayer Hell Awaits',
-                url: 'itachi-shopper',
-                category: 'Шопперы',
-                categoryURL: 'shoppers',
-                description: 'Международный преступник Итачи Учиха',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Черный',
-                        hex: '#000000',
-                        url: 'black'
-                    },
-                    {
-                        color: 'Бордовый',
-                        hex: '#ca0000',
-                        url: 'burgundy'
-
-                    }
-
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: 'XL'
-                    },
-                    {
-                        size: 'XS'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Джинса',
-                            url: 'dzhinca'
-                        }
-                    ],
-                    description: 'нежная джинса'
-                },
-                price: 170,
-                discount: null
-            },
-            {
-                id: 'asdwadsssswadaw',
-                title: 'Жоппер Шоппер',
-                url: 'itachi-shopper',
-                category: 'Шопперы',
-                categoryURL: 'shoppers',
-                description: 'Международный преступник Итачи Учиха',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d55.png?alt=media&token=9543e35c-a3bb-475f-8143-62309b866968'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Черный',
-                        hex: '#000000',
-                        url: 'black'
-                    },
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: '40×40'
-                    },
-                    {
-                        size: '20×20'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Дикая хвоя',
-                            url: 'dikaya-hvoya'
-                        },
-                        {
-                            component: 'Джинса',
-                            url: 'dzhinsa'
-                        }
-                    ],
-                    description: 'Дичайшая хвоя, нежная джинса'
-                },
-                price: 150,
-                discount: 0.2
-            },
-            {
-                id: 'asdwadswasssssssdaw',
-                title: 'Жоппер Шоппер',
-                url: 'itachi-shoppers',
-                category: 'Шопперы',
-                categoryURL: 'shoppers',
-                description: 'Международный преступник Итачи Учиха',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL:  'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d55.png?alt=media&token=9543e35c-a3bb-475f-8143-62309b866968'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Черный',
-                        hex: '#000000',
-                        url: 'black'
-                    },
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: '40×40'
-                    },
-                    {
-                        size: '20×20'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Паралон',
-                            url: 'paralon'
-                        },
-                        {
-                            component: 'Древесный уголь',
-                            url: 'drevesny-ugol'
-                        }
-                    ],
-                    description: 'Древесный уголь, паралон'
-                },
-                price: 250,
-                discount: 0.2
-            },
-            {
-                id: 'asdwadswadaw',
-                title: 'Жоппер Шоппер',
-                url: 'itachi-shopper',
-                category: 'Шопперы',
-                categoryURL: 'shoppers',
-                description: 'Международный преступник Итачи Учиха',
-                images:[
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Черный',
-                        hex: '#000000',
-                        url: 'black'
-                    },
-                ],
-                care: 'Машинная стирка',
-                sizes:[
-                    {
-                        size: '40×40'
-                    },
-                    {
-                        size: '20×20'
-                    }
-                ],
-                structure: {
-                    components:[
-                        {
-                            component: 'Саржа',
-                            url: 'sarzha'
-                        },
-                        {
-                            component: 'Войлок',
-                            url: 'voilok'
-                        }
-                    ],
-                    description: '95% саржи и немного войлока'
-                },
-                price: 150,
-                discount: 0.2
-            },
-            {
-                id: 'asdwadswsdfadaw',
-                title: 'Жоппер Шоппер',
-                url: 'itachi-shopper',
-                category: 'Шопперы',
-                categoryURL: 'shoppers',
-                description: 'Международный преступник Итачи Учиха',
-                images: [
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                    {
-                        imageURL: 'https://firebasestorage.googleapis.com/v0/b/nichoshn-8e955.appspot.com/o/5fa5de88c80d5.png?alt=media&token=0047dce7-e113-4c0d-bb92-134199aaf0bf'
-                    },
-                ],
-                colors: [
-                    {
-                        color: 'Желтый',
-                        hex: '#fff100',
-                        url: 'yellow'
-                    },
-                ],
-                care: 'Машинная стирка',
-                sizes: [
-                    {
-                        size: '40×40'
-                    },
-                    {
-                        size: '20×20'
-                    }
-                ],
-                structure: {
-                    components: [
-                        {
-                            component: 'Саржа',
-                            url: 'sarzha'
-
-                        },
-                        {
-                            component: 'Войлок',
-                            url: 'voilok'
-                        }
-                    ],
-                    description: '95% саржи и немного войлока'
-                },
-                price: 170,
-                discount: 0.5
-            }],
-        product: {}
     },
     mutations:{
-        SET_PRODUCT(state, payload){
-            state.product = payload
+        ADD_PRODUCT(state, payload){
+            if (state.products.filter(e => e.url === payload.url).length <= 0) {
+                state.products.push(payload)
+            }
+        },
+        SET_FILTER(state, payload){
+            state.filters = payload
+        },
+        CLEAR_LIST(state){
+            state.products = []
         },
         ADD_TO_WISHLIST(state, payload){
             state.wishlist.push(payload)
@@ -460,18 +29,85 @@ export default {
         }
     },
     actions: {
+        GET_FILTERS({commit}, payload){
+            return new Promise(resolve => {
+                Vue.prototype.$db
+                    .collection(payload.category)
+                    .doc('filter')
+                    .get().then((doc) => {
+                    commit('SET_FILTER', doc.data())
+                    resolve()
+                })
+                    .catch(error => commit('SET_ERROR', error))
+                    .finally(() => commit('SET_PROCESSING', false))
+            })
+        },
+        GET_PRODUCTS({commit}, payload){
+            commit('SET_PROCESSING', true)
+            commit('CLEAR_LIST')
+            if (payload.tags!==undefined && payload.tags.length!==0){
+                Vue.prototype.$db
+                    .collection(payload.category)
+                    .where("tags", "array-contains-any", payload.tags)
+                    //same indexes
+                    //.where("totalPrice", ">=", parseInt(payload.price[0]))
+                    //.where("totalPrice", "<=", parseInt(payload.price[1]))
+                    .get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        if (doc.data().totalPrice >= parseInt(payload.price[0]) && doc.data().totalPrice <= parseInt(payload.price[1])) {
+                            if (doc.data().url) {
+                                commit('ADD_PRODUCT', doc.data())
+                            }
+                        }
+                    })
+                    })
+                    .catch(error => commit('SET_ERROR', error))
+                    .finally(() => commit('SET_PROCESSING', false))
+            }
+            else if (payload.price!==undefined && payload.price.length!==0){
+                Vue.prototype.$db
+                    .collection(payload.category)
+                    .where("totalPrice", ">=", parseInt(payload.price[0]))
+                    .where("totalPrice", "<=", parseInt(payload.price[1]))
+                    .get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        if (doc.data().url){
+                            commit('ADD_PRODUCT', doc.data())
+                        }
+
+                    })
+                   })
+                    .catch(error => commit('SET_ERROR', error))
+                    .finally(() => commit('SET_PROCESSING', false))
+            }
+            else{
+                Vue.prototype.$db
+                    .collection(payload.category)
+                    .get()
+                    .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        if (doc.data().url){
+                            commit('ADD_PRODUCT', doc.data())
+                        }
+                    })
+                })
+                    .catch(error => commit('SET_ERROR', error))
+                    .finally(() => commit('SET_PROCESSING', false))
+            }
+
+        },
         GET_DATA(){
-            Vue.prototype.$db.collection("clothes")
-            .where("colors", "array-contains", "green")
-            .where("price", ">=", 140)
-            .where("price", "<=", 200)
+            /*Vue.prototype.$db.collection("futbolki")
+            .where("tags", "array-contains-any", ["belyj"])
+            .where("totalPrice", ">=", 135)
+            .where("totalPrice", "<=", 180)
             .get()
             .then((querySnapshot) => {
                 // eslint-disable-next-line no-unused-vars
                 querySnapshot.forEach((doc) => {
-                   // console.log(doc.data());
+                   console.log(doc.data());
                 })
-             });
+             });*/
         },
         FIND_PRODUCT({commit, getters}, payload){
             commit('SET_PROCESSING', true)
@@ -494,6 +130,13 @@ export default {
         }
     },
     getters:{
+        products: state => {
+            return state.products
+        },
+        filters: state => {
+            return state.filters
+        },
+
         getWishList: (state)=>{
           return state.wishlist
         },

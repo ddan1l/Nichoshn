@@ -1,106 +1,120 @@
 <template>
   <div>
+    <div class="video">
+      <video ref="video" autoplay muted loop>
+        <source src="../../assets/homeVideo3.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+    </div>
+    <v-btn color="black" outlined @click="animate= !animate" style="position: absolute; top: 200px; left: 20px; z-index: 5">toggle</v-btn>
+    <v-btn color="black" outlined @click="pause= !pause" style="position: absolute; top: 250px; left: 20px; z-index: 5">play: {{pause}}</v-btn>
+    <v-dialog v-model="authDialog" max-width="500">
+      <Identify/>
+    </v-dialog>
     <v-app-bar
-        style="z-index: 4"
-        absolute
-        :extended = "!isHidden"
+        height="80"
+        :class="$route.path==='/admin'? 'admin' : undefined"
         :style="{position: $route.path==='/admin'?  'fixed': undefined}"
         color="transparent"
         flat
-        app>
-      <v-app-bar-nav-icon class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <div :class="$route.path==='/admin'? 'admin' : undefined" style="width: 100%; height: 64px">
+        >
+<!--      <v-app-bar-nav-icon class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>-->
         <v-container>
-          <router-link to="/" tag="h1">
-            <h1 style="cursor: pointer" class="logo">
-              Ничошный шоп
-            </h1>
-          </router-link>
-          <v-btn style="cursor: default; opacity: 0;"></v-btn>
-          <v-dialog v-model="authDialog" max-width="500">
-            <Identify/>
-          </v-dialog>
-          <v-tooltip v-model="show" bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn @mouseleave="show = false" @mouseover="show = true" :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
-                     x-small text fab v-bind="attrs" class="pa-5 float-right"
+          <v-row  align="center"  justify="space-between">
+            <transition   @before-enter="beforeEnter"
+                          @enter="enter"
+                          @leave="leave"
+                          :css="false">
+              <router-link v-if="animate && !busy" to="/" tag="h1">
+                <div style="cursor: pointer" class="logo">
+                  <span>Ничошный</span>
+                   шоп
+                </div>
+              </router-link>
+            </transition>
+            <transition   @before-enter="beforeEnter"
+                          @enter="enter"
+                          @leave="leave"
+                          :css="false">
+           <div v-if="animate && !busy" >
+             <!--  eslint-disable-next-line vue/no-use-v-if-with-v-for-->
+             <v-btn :color="item.color" height="40" v-for="(item, index) in navLinks" active-class="activeLink" :key="index" class="sectionLink"  tile text :to="item.route">
+               {{item.name}}
+             </v-btn>
+           </div>
+            </transition>
+            <transition   @before-enter="beforeEnter"
+                          @enter="enter"
+                          @leave="leave"
+                          :css="false">
+            <div v-if="animate && !busy">
+
+              <v-btn to="/wishlist" x-small text fab class="pa-5   ">
+                <v-icon dark>
+                  far fa-heart
+                </v-icon>
+              </v-btn>
+              <v-btn  :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                     x-small text fab  class="pa-5 mr-2 ml-2"
                      @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
                 <v-icon dark>
                   far fa-user
                 </v-icon>
               </v-btn>
-            </template>
-            <span>Профиль</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn to="/wishlist" v-bind="attrs" v-on="on"  x-small  text fab class="pa-5 mr-2 ml-2 float-right">
-                <v-icon dark>
-                  far fa-heart
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>Избранное</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template  v-slot:activator="{ on, attrs }">
-              <v-btn to="/basket" v-on="on" v-bind="attrs"  x-small text fab class="pa-5 float-right">
+              <v-btn to="/basket" x-small text fab class="pa-5 ">
                 <v-icon dark>
                   $shoppingBag
                 </v-icon>
               </v-btn>
-            </template>
-            <span>Корзина</span>
-          </v-tooltip>
+
+                  <!--              <v-tooltip v-model="show"  bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn @mouseleave="show = false" @mouseover="show = true" :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                           x-small text fab v-bind="attrs" class="pa-5 float-right"
+                           @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
+                      <v-icon dark>
+                        far fa-user
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Профиль</span>
+                </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn to="/wishlist" v-bind="attrs" v-on="on" x-small  text fab class="pa-5 mr-2 ml-2 float-right">
+                    <v-icon dark>
+                      far fa-heart
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Избранное</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template  v-slot:activator="{ on, attrs }">
+                  <v-btn to="/basket" v-on="on" v-bind="attrs"  x-small text fab class="pa-5 float-right">
+                    <v-icon dark>
+                      $shoppingBag
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>Корзина</span>
+              </v-tooltip>-->
+            </div>
+            </transition>
+          </v-row>
+
         </v-container>
-      </div>
-      <template v-if="!isHidden" class="hidden-sm-and-down red--text" v-slot:extension>
-        <v-container style="display: flex; justify-content: space-between; max-width: min-content">
-          <v-btn height="48" tile class="sectionLink" text to="/">
-            Главная
-          </v-btn>
-          <v-btn color="red" class="sectionLink" height="48" tile text to="/novelties">
-            Новинки
-          </v-btn>
-          <v-menu elevation="0" rounded="0" offset-y>
-            <template v-slot:activator="{ on, attrs }">
-                <v-btn height="48"
-                       link
-                       class="sectionLink"
-                       :class="{activeLink: $route.path.includes('clothes')}"
-                       v-bind="attrs"
-                       v-on="on"
-                       tile text>
-                  Одежда
-                </v-btn>
-            </template>
-            <v-list class="pa-0 pt-2">
-              <div class="pl-4">Категории</div>
-              <v-divider class="mx-4 mt-2 ">''</v-divider>
-              <v-list-item
-                  :to= "'/clothes/'+item.categoryURL"
-                  v-for="(item, index) in clothingCategories"
-                  :key="index"
-              >
-                <v-list-item-title >{{ item.category }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-          <v-btn class="sectionLink" height="48" tile text>
-            Аксессуары
-          </v-btn>
-          <v-btn class="sectionLink" height="48" tile text to="/picture">
-            Картины
-          </v-btn>
-          <v-btn class="sectionLink" height="48" tile text to="/constructor">
-            Конструктор
+          <!--      <template v-if="!isHidden" class="hidden-sm-and-down red&#45;&#45;text" v-slot:extension>
+        <v-container class="mt-3" style="display: flex; justify-content: space-between; max-width: min-content">
+          <v-btn :color="item.color"  v-for="(item, index) in navLinks" :key="index" class="sectionLink" height="48" tile text :to="item.route">
+            {{item.name}}
           </v-btn>
         </v-container>
-      </template>
+      </template>-->
     </v-app-bar>
-      <v-navigation-drawer v-model="drawer" absolute  temporary >
+        <!--      <v-navigation-drawer v-model="drawer" absolute temporary >
         <v-list class="hidden-md-and-up" nav dense>
-          <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4">
+          <v-list-item-group v-model="group" active-class="deep-purple&#45;&#45;text text&#45;&#45;accent-4">
             <v-list-item  text>
             </v-list-item>
             <v-list-item @click="signout" v-if="isAuthenticated" text>
@@ -109,22 +123,53 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-      </v-navigation-drawer>
+      </v-navigation-drawer>-->
   </div>
 </template>
+
 <script>
 import Identify from "@/components/Identify";
+import Velocity from 'velocity-animate'
 export default {
   name: "AppHeader",
   components:{
-    Identify: Identify
+    Identify
   },
   data(){
     return {
+      pause: false,
+      duration: 600,
+      delay: 0,
+      busy: false,
+      animate: false,
+      animationDuration: 1000,
       show: false,
       authDialog: false,
       drawer: false,
       group: null,
+      navLinks: [
+        {
+          name: 'Главная',
+          route: '/'
+        },
+        {
+          name: 'Новинки',
+          route: '/novelties',
+          color: 'red'
+        },
+        {
+          name: 'Категории',
+          route: '/categories'
+        },
+        {
+          name: 'Конструктор',
+          route: '/constructor'
+        },
+        {
+          name: 'Контакты',
+          route: '/contacts'
+        },
+      ]
     }
   },
   computed:{
@@ -143,12 +188,53 @@ export default {
       }
   },
   methods:{
+    beforeEnter: function (el) {
+      for (let child of Array.from(el.children)){
+         child.style.opacity = 0
+      }
+      this.duration = 300
+    },
+    enter(el, done) {
+      this.busy = true
+      for (let child of Array.from(el.children)){
+        this.delay+=200
+        if (Array.from(el.children).indexOf(child) === Array.from(el.children).length -1){
+          Velocity(child, { opacity: 1}, {duration: 200, delay: this.delay }, { complete: done })
+        }
+        else {
+          Velocity(child, { opacity: 1}, {duration: 200, delay: this.delay })
+        }
+      }
+      this.busy = false
+
+    },
+    leave(el, done) {
+      this.delay = 0
+      for (let child of Array.from(el.children)){
+        this.delay+=50
+        if (Array.from(el.children).indexOf(child) === Array.from(el.children).length -1){
+          Velocity(child, { opacity: 0, translateX: '-10px'}, {duration: 100, delay: this.delay }, { complete: done })
+        }
+        else {
+          Velocity(child, { opacity: 0, translateX: '-10px'}, {duration: 100, delay: this.delay })
+        }
+      }
+    },
    signout(){
       this.$store.dispatch('SIGNOUT')
       this.$router.push("/")
    }
   },
   watch: {
+    pause(val){
+      if (val){
+        this.$refs.video.play()
+      }
+      else {
+        this.$refs.video.pause()
+      }
+
+    },
     group () {
       this.drawer = false
     },
@@ -164,49 +250,68 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap');
+.video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  filter: blur(5px) grayscale(70%);
 
+}
+.video::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff73;
+
+}
+
+/deep/.v-btn__content{
+  font-weight: 400 !important ;
+  /*font-family: 'Roboto Condensed', sans-serif !important;*/
+  font-size: 14px;
+}
 .logo {
   font-size: 28px;
+  font-family: 'Roboto Condensed', sans-serif !important;
   text-transform: uppercase;
   font-weight: 300;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
 }
-/*
-/deep/ div.v-toolbar__extension {
-  background-color: 0 0;
-}*/
-
-/deep/ .sectionLink > .v-btn__content {
+/*.logo span{
   font-weight: 300;
+  background-color: black;
+  color: white;
+  padding: 5px;
+  font-size: 26px;
 }
+
+ */
+
+
 .v-list-item__title {
   font-weight: 300;
 }
+
 .activeLink{
-  border: 1px solid;
+  border: none;
+  border-bottom: 2px solid;
   background-color: transparent;
 }
-/deep/ a.v-btn--active::before{
-  border: 1px solid;
-  background-color: transparent;
+
+/deep/.theme--light.v-btn--active:hover::before, .theme--light.v-btn--active::before {
+  opacity: 0;
 }
-/deep/ a.v-btn--active{
-  border: 1px solid;
-  background-color: transparent;
+/deep/.theme--light.v-btn:hover::before {
+  opacity: .1 !important;
 }
-/deep/ div.v-toolbar__content {
-  background-color: white;
-}
+
 i{
   font-size: 16px;
 }
-/deep/.activeLink:focus {
-  border: none;
-  outline: none;
-  border: 1px solid;
-}
+
 .admin{
   border-bottom: 1px solid #dadada;
   box-shadow: 0 1px 5px #0000002e;
@@ -225,6 +330,9 @@ i{
 header{
   z-index: 2;
 }
+/deep/.v-toolbar__content {
+
+}
 .v-btn.v-btn--flat.v-btn--router.v-btn--text.v-btn--tile.theme--light.v-size--default, .v-btn.v-btn--flat.v-btn--text.v-btn--tile.theme--light.v-size--default {
   margin: 0 10px;
 }
@@ -234,5 +342,6 @@ header{
 .v-navigation-drawer.v-navigation-drawer--absolute.v-navigation-drawer--close.v-navigation-drawer--is-mobile.v-navigation-drawer--temporary.theme--light {
   z-index: 1 !important;
 }
+
 
 </style>

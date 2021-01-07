@@ -33,6 +33,17 @@
                 readonly
                 placeholder="URL"
             ></v-text-field>
+            <v-file-input
+                accept="image/png, image/jpeg, image/bmp"  v-model="file" multiple @change="addFile" :clearable="false"
+                prepend-inner-icon="far fa-image" color="black" prepend-icon="" outlined placeholder="Добавить фото"/>
+            <v-img v-if="image!== ''" class="mb-3" :src="image">
+              <v-btn style="z-index: 2" @click="file = []; image = ''" width="20" height="20" class="dismiss" icon>
+                  <span class="fa-stack fa-2x">
+                    <i style="color: white" class="fas fa-circle fa-stack-1x"></i>
+                    <i style="color: orangered" class="fas fa-times-circle fa-stack-1x fa-inverse"></i>
+                  </span>
+              </v-btn>
+            </v-img>
             <v-btn class="mb-5" @click.prevent="handleCategory" outlined color="black darken-1">
               Применить
             </v-btn>
@@ -43,18 +54,38 @@
         </validation-observer>
       </v-card>
     </v-dialog>
-    <v-dialog persistent v-model="deleteDialog" max-width="400">
+    <v-dialog persistent v-model="deleteDialog" max-width="530">
       <v-card>
-        <v-card-title class="headline mb-3">
-          Удалить данную категорию?
+        <v-toolbar elevation="0" height="130" class="pa-2" color="red darken-2">
+          <v-icon color="white">
+            fas fa-exclamation-triangle
+          </v-icon>
+          <div class="title white--text ml-3">
+            Удалить категорию?
+          </div>
+          <div class="mb-2 subtitle-2 white--text">
+            Все данные в этой категории, будут удалены без возможности восстановления.
+          </div>
+        </v-toolbar>
+        <v-card-title class="subtitle-2 font-weight-regular pa-6 pb-0 pt-4">
+          Чтобы удалить эту категорию, введите ее url: <span class="font-weight-bold ml-1">{{activeURL}}</span>
+          <v-text-field
+              class="mt-3"
+              v-model="categoryInput"
+              :placeholder="activeURL"
+              clearable
+              color="black"
+              outlined
+              dense
+          ></v-text-field>
         </v-card-title>
-        <v-card-actions>
+        <v-card-actions class="pt-0 pr-6 mb-2">
           <v-spacer></v-spacer>
-          <v-btn text @click="deleteDialog = false">
-            Нет
+          <v-btn class="mr-3" text @click="deleteDialog = false">
+            Отмена
           </v-btn>
-          <v-btn outlined @click="deleteCategory()">
-            Да
+          <v-btn  :disabled="categoryInput !== activeURL" color="red darken-2" class="white--text" @click="deleteCategory()">
+            Удалить
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -64,7 +95,7 @@
       <div style="display: flex">
         <div style="width: min-content" class="title font-weight-regular">Категории</div>
         <v-spacer></v-spacer>
-        <v-btn @click="handleAddingButton()" class="mr-10" rounded outlined>
+        <v-btn  @click="handleAddingButton()" class="mr-10" rounded outlined>
           Добавить
           <v-icon class="ml-2" size="15">
             fas fa-plus
@@ -79,10 +110,10 @@
           color="black"
       ></v-progress-circular>
     </div>
-    <v-col v-else style="transition: 1s" sm="4" v-for="(item, index) in categories" :key="index">
+    <v-col v-else style="transition: 1s; min-height: 500px" sm="4" v-for="(item, index) in categories" :key="index">
       <v-hover>
         <template v-slot:default="{hover}">
-          <v-card height="100%" :class="`elevation-${hover ? 24 : 6}`" class="px-9 transition-swing pt-4 pb-3">
+          <v-card height="100%"  class="rounded-0 transition-swing pa-0">
             <template slot="progress">
               <v-progress-linear color="black" indeterminate></v-progress-linear>
             </template>
@@ -103,9 +134,17 @@
                 </v-btn>
               </div>
             </v-expand-transition>
-            <div style="font-size: 22px !important" class="title text-center mb-3 ">{{ item.category }}</div>
-            <div class="body-1 text-center mb-5">{{ item.description }}</div>
-            <div class="subtitle-1 grey--text text--darken-3 text-center">URL: {{ item.categoryURL }}</div>
+            <div :style="{filter: hover ? 'blur(2px)' : 'blur(0)'}" style="background: linear-gradient(#00000087, #000000de); z-index: 2; transition: .5s;">
+              <div style="font-size: 22px !important;" class="px-5 pt-3 title white--text text-center">{{ item.category }}</div>
+              <div class="px-5 py-3 body-1 white--text text-center ">{{ item.description }}</div>
+            </div>
+            <v-img class="preview" style="transition: .5s" :style="{filter: hover ? 'blur(2px)' : 'blur(0)'}" :src="item.image" >
+              <template v-slot:placeholder>
+                <v-row class="fill-height ma-0" align="center" justify="center">
+                  <v-progress-circular indeterminate color="black lighten-5"></v-progress-circular>
+                </v-row>
+              </template>
+            </v-img>
           </v-card>
         </template>
       </v-hover>
@@ -134,6 +173,8 @@ export default {
   mixins: [transliterate],
   data() {
     return {
+      file: [],
+      categoryInput: '',
       selectedMode: '',
       message: '',
       status: 'error',
@@ -142,16 +183,34 @@ export default {
       deleteDialog: false,
       activeId: '',
       activeIndex: '',
+      activeURL: '',
       name: '',
-      description: ''
+      description: '',
+      image: '',
+      deleteURL: ''
     }
   },
   methods: {
+    addFile() {
+        new Promise(resolve => {
+          let reader = new FileReader()
+          reader.onload = (e) => {
+            resolve(e.target.result)
+          }
+          reader.readAsDataURL(this.file[0])
+        })
+        .then((base64) => {
+          this.image = base64
+        })
+       this.tempFile = []
+    },
     handleAddingButton() {
       this.categoryDialog = true
-      this.selectedMode = 'Adding';
-      this.name = '';
-      this.description = '';
+      this.selectedMode = 'Adding'
+      this.name = ''
+      this.description = ''
+      this.image = ''
+      this.file = []
       if (this.$refs.observer) {
         this.$refs.observer.reset()
       }
@@ -160,6 +219,8 @@ export default {
       this.categoryDialog = true;
       this.activeIndex = index
       this.selectedMode = 'Updating';
+      this.image = item.image
+      this.deleteURL = item.image
       this.activeId = item.id;
       this.name = item.category;
       this.description = item.description;
@@ -168,6 +229,8 @@ export default {
       this.deleteDialog = true
       this.activeId = item.id
       this.activeIndex = index
+      this.name = item.category
+      this.activeURL = this.url
     },
     deleteCategory() {
       this.deleteDialog = false
@@ -181,30 +244,44 @@ export default {
     handleCategory() {
       this.$refs.observer.validate().then(result => {
         if (result) {
-          let category = {
-            category: this.name,
-            categoryURL: this.url,
-            description: this.description,
-            id: ''
-          }
-          if (this.selectedMode === 'Adding') {
-            this.$store.dispatch('ADD_CATEGORY', category).then((info) => {
-              if (info.message) {
-                this.message = info.message
-                this.status = 'success'
-              }
-            })
-          }
-          if (this.selectedMode === 'Updating') {
-            category.id = this.activeId
-            this.$store.dispatch('UPDATE_CATEGORY', category).then((info) => {
-              if (info.message) {
-                this.message = info.message
-                this.status = 'success'
-              }
-            })
-          }
           this.categoryDialog = false
+            if (this.selectedMode === 'Adding') {
+              this.$store.dispatch('SAVE_IMAGES', this.file).then((ref) => {
+                let category = {
+                  category: this.name,
+                  categoryURL: this.url,
+                  description: this.description,
+                  id: '',
+                  image: ref[0].imageURL
+                }
+                this.$store.dispatch('ADD_CATEGORY', category).then((info) => {
+                  if (info.message) {
+                    this.message = info.message
+                    this.status = 'success'
+                  }
+                })
+              })
+            }
+            if (this.selectedMode === 'Updating') {
+              this.$store.dispatch('DELETE_IMAGE', this.deleteURL).then(() => {
+                this.$store.dispatch('SAVE_IMAGES', this.file).then((ref) => {
+                  let category = {
+                    category: this.name,
+                    categoryURL: this.url,
+                    description: this.description,
+                    id: '',
+                    image: ref[0].imageURL
+                  }
+                  category.id = this.activeId
+                  this.$store.dispatch('UPDATE_CATEGORY', category).then((info) => {
+                    if (info.message) {
+                      this.message = info.message
+                      this.status = 'success'
+                    }
+                  })
+                })
+              })
+            }
         }
       })
     },
@@ -247,6 +324,7 @@ export default {
 .handles {
   top: 0;
   position: absolute;
+  border-radius: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -255,19 +333,20 @@ export default {
   align-items: center;
   width: 100%;
   left: 0;
-  background-color: #ffffffde;
 }
-
 .v-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: end;
 }
 .progress{
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%);
+}
+/deep/.v-toolbar__content, .v-toolbar__extension {
+  flex-wrap: wrap;
 }
 .blur {
   z-index: 2;
@@ -277,4 +356,21 @@ export default {
   height: 100%;
   position: absolute;
 }
+/deep/ .v-input__prepend-inner {
+  padding-right: 13px !important;
+}
+/deep/ .v-input__slot {
+  cursor: pointer !important;
+}
+/deep/ .dismiss.v-btn.v-btn--flat.v-btn--icon.v-btn--round.theme--light.v-size--default {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+/deep/.v-image.v-responsive.preview.theme--light {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 </style>
