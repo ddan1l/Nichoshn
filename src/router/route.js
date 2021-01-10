@@ -9,50 +9,76 @@ const routes = [
   {
     path: '/',
     name: 'Home',
+    meta: {
+      routeLevel: 0
+    },
     component: () => import('../views/Home')
+  },
+  {
+    path: '/novelties',
+    name: 'Novelties',
+    meta: {
+      routeLevel: 1
+    },
+    component: () => import('../views/Novelties')
   },
   {
     path: '/categories',
     name: 'Categories',
+    meta: {
+      routeLevel: 2
+    },
     component: () => import('../views/Categories')
   },
   {
     path: '/categories/:categoryURL',
     props: true,
-    name: 'Clothes',
+    name: 'Category',
+    meta: {
+      routeLevel: 3
+    },
     component: () => import('../views/Products')
   },
   {
     path: '/clothes/:categoryURL/:productURL',
     props: true,
     name: 'Product',
+    meta: {
+      routeLevel: 4
+    },
     component: () => import('../views/Product')
   },
   {
     path: '/constructor',
     name: 'Constructor',
+    meta: {
+      routeLevel: 5
+    },
     component: () => import('../views/Constructor')
   },
   {
-    path: '/signin',
-    name: 'SignIn',
-    component: () => import('../components/Identify/Login')
+    path: '/contacts',
+    name: 'Contacts',
+    meta: {
+      routeLevel: 6
+    },
+    component: () => import('../views/Contacts')
   },
-  {
-    path: '/signup',
-    name: 'SignUp',
-    component: () => import('../components/Identify/Register')
-  },
+
   {
     path: '/identify',
     name: 'Identify',
+    meta: {
+      routeLevel: 6
+    },
     component: () => import('../views/Identify')
   },
   {
     path: '/profile',
     name: 'Profile',
     meta: {
-      authRequired: true
+      authRequired: true,
+      routeLevel: 7
     },
     component: () => import('../views/Profile')
   },
@@ -60,7 +86,8 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     meta: {
-      adminRequired: true
+      adminRequired: true,
+      routeLevel: 8
     },
     component: () => import('../views/Admin')
   },
@@ -70,7 +97,6 @@ const router = new VueRouter({
   mode: 'history',
   routes,
 })
-
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(route => route.meta.authRequired)){

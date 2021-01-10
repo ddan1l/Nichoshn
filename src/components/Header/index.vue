@@ -1,67 +1,60 @@
 <template>
   <div>
     <div class="video">
-      <video ref="video" autoplay muted loop>
+      <video ref="video"  muted loop>
         <source src="../../assets/homeVideo3.mp4" type="video/mp4">
         Your browser does not support HTML5 video.
       </video>
     </div>
-    <v-btn color="black" outlined @click="animate= !animate" style="position: absolute; top: 200px; left: 20px; z-index: 5">toggle</v-btn>
-    <v-btn color="black" outlined @click="pause= !pause" style="position: absolute; top: 250px; left: 20px; z-index: 5">play: {{pause}}</v-btn>
+    <v-btn color="black" outlined @click="animate= !animate" style="position: absolute; top: 20px; right: 20px; z-index: 15">toggle</v-btn>
+    <v-btn color="black" outlined @click="pause= !pause" style="position: absolute; top: 64px; right: 20px; z-index: 5">video: {{pause}}</v-btn>
     <v-dialog v-model="authDialog" max-width="500">
       <Identify/>
     </v-dialog>
+    <transition
+        @before-enter="beforeEnter"
+        @enter="enter"
+        @leave="leave"
+        :css="false">
     <v-app-bar
-        height="80"
+        ref="header"
+        v-show="animate"
         :class="$route.path==='/admin'? 'admin' : undefined"
         :style="{position: $route.path==='/admin'?  'fixed': undefined}"
         color="transparent"
         flat
+        app
         >
 <!--      <v-app-bar-nav-icon class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>-->
         <v-container>
           <v-row  align="center"  justify="space-between">
-            <transition   @before-enter="beforeEnter"
-                          @enter="enter"
-                          @leave="leave"
-                          :css="false">
-              <router-link v-if="animate && !busy" to="/" tag="h1">
+              <router-link animateHeader to="/" tag="h1">
                 <div style="cursor: pointer" class="logo">
                   <span>Ничошный</span>
                    шоп
                 </div>
               </router-link>
-            </transition>
-            <transition   @before-enter="beforeEnter"
-                          @enter="enter"
-                          @leave="leave"
-                          :css="false">
-           <div v-if="animate && !busy" >
+           <div>
              <!--  eslint-disable-next-line vue/no-use-v-if-with-v-for-->
-             <v-btn :color="item.color" height="40" v-for="(item, index) in navLinks" active-class="activeLink" :key="index" class="sectionLink"  tile text :to="item.route">
+             <v-btn animateHeader :color="item.color" height="40" v-for="(item, index) in navLinks" active-class="activeLink" :key="index" class="sectionLink"  tile text :to="item.route">
                {{item.name}}
              </v-btn>
            </div>
-            </transition>
-            <transition   @before-enter="beforeEnter"
-                          @enter="enter"
-                          @leave="leave"
-                          :css="false">
-            <div v-if="animate && !busy">
+            <div>
 
-              <v-btn to="/wishlist" x-small text fab class="pa-5   ">
+              <v-btn animateHeader to="/wishlist" x-small text fab class="pa-5 sectionLink ">
                 <v-icon dark>
                   far fa-heart
                 </v-icon>
               </v-btn>
-              <v-btn  :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
-                     x-small text fab  class="pa-5 mr-2 ml-2"
+              <v-btn animateHeader :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                     x-small text fab  class="pa-5 mr-2 ml-2 sectionLink"
                      @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
                 <v-icon dark>
                   far fa-user
                 </v-icon>
               </v-btn>
-              <v-btn to="/basket" x-small text fab class="pa-5 ">
+              <v-btn animateHeader to="/basket" x-small text fab class="pa-5 sectionLink">
                 <v-icon dark>
                   $shoppingBag
                 </v-icon>
@@ -100,7 +93,7 @@
                 <span>Корзина</span>
               </v-tooltip>-->
             </div>
-            </transition>
+
           </v-row>
 
         </v-container>
@@ -112,6 +105,7 @@
         </v-container>
       </template>-->
     </v-app-bar>
+    </transition>
         <!--      <v-navigation-drawer v-model="drawer" absolute temporary >
         <v-list class="hidden-md-and-up" nav dense>
           <v-list-item-group v-model="group" active-class="deep-purple&#45;&#45;text text&#45;&#45;accent-4">
@@ -131,18 +125,16 @@
 import Identify from "@/components/Identify";
 import Velocity from 'velocity-animate'
 export default {
-  name: "AppHeader",
+  name: "Header",
   components:{
     Identify
   },
   data(){
     return {
       pause: false,
-      duration: 600,
       delay: 0,
-      busy: false,
       animate: false,
-      animationDuration: 1000,
+      animatedList: [],
       show: false,
       authDialog: false,
       drawer: false,
@@ -173,52 +165,51 @@ export default {
     }
   },
   computed:{
-      clothingCategories(){
-        return this.$store.getters.getClothingCategories
-      },
-      isHidden(){
-        let name = this.$route.name
-        return name === 'Identify' || name === 'Constructor' || name === 'Profile' || name === 'Admin';
-      },
       isAuthenticated(){
         return this.$store.getters.isAuthenticated
       },
       isEmailVerified(){
         return this.$store.getters.isEmailVerified
-      }
+      },
+  },
+  mounted() {
+    this.animatedList =  Array.from(document.querySelectorAll('[animateHeader]'))
+    setTimeout( () =>this.animate = true, 1000)
+
   },
   methods:{
-    beforeEnter: function (el) {
-      for (let child of Array.from(el.children)){
+    beforeEnter() {
+      for (let child of this.animatedList){
          child.style.opacity = 0
       }
-      this.duration = 300
     },
     enter(el, done) {
-      this.busy = true
-      for (let child of Array.from(el.children)){
-        this.delay+=200
-        if (Array.from(el.children).indexOf(child) === Array.from(el.children).length -1){
-          Velocity(child, { opacity: 1}, {duration: 200, delay: this.delay }, { complete: done })
+      let arr = this.animatedList
+      for (let child of arr){
+        this.delay+=100
+        if (arr.indexOf(child) === arr.length -1){
+          Velocity(child, { opacity: 1, translateY: '10px'}, {duration: 200, delay: this.delay }, { complete: done })
         }
         else {
-          Velocity(child, { opacity: 1}, {duration: 200, delay: this.delay })
+          Velocity(child, { opacity: 1, translateY: '10px'}, {duration: 200, delay: this.delay })
         }
       }
-      this.busy = false
-
     },
     leave(el, done) {
       this.delay = 0
-      for (let child of Array.from(el.children)){
+      let arr = this.animatedList
+      for (let child of this.animatedList){
         this.delay+=50
-        if (Array.from(el.children).indexOf(child) === Array.from(el.children).length -1){
-          Velocity(child, { opacity: 0, translateX: '-10px'}, {duration: 100, delay: this.delay }, { complete: done })
+        if (arr.indexOf(child) === arr.length -1){
+          Velocity(child, { opacity: 0, translateY: '-10px'}, {duration: 100, delay: this.delay },{ complete: done })
         }
         else {
-          Velocity(child, { opacity: 0, translateX: '-10px'}, {duration: 100, delay: this.delay })
+          Velocity(child, { opacity: 0, translateY: '-10px'}, {duration: 100, delay: this.delay })
         }
       }
+      setTimeout(() => {
+        this.$refs.header.$el.style.display ='none'
+      }, this.delay + 500)
     },
    signout(){
       this.$store.dispatch('SIGNOUT')
@@ -250,6 +241,7 @@ export default {
 </script>
 
 <style scoped>
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap');
 .video {
   position: fixed;
@@ -257,7 +249,7 @@ export default {
   left: 0;
   min-width: 100%;
   min-height: 100%;
-  filter: blur(5px) grayscale(70%);
+  filter: blur(3px) grayscale(0%) ;
 
 }
 .video::before {
@@ -266,7 +258,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #ffffff73;
-
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.92) 100%);
 }
 
 /deep/.v-btn__content{
@@ -290,15 +282,8 @@ export default {
 
  */
 
-
 .v-list-item__title {
   font-weight: 300;
-}
-
-.activeLink{
-  border: none;
-  border-bottom: 2px solid;
-  background-color: transparent;
 }
 
 /deep/.theme--light.v-btn--active:hover::before, .theme--light.v-btn--active::before {

@@ -11,7 +11,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <div class="mt-4 mb-3" v-else>
+    <div class="mb-3" v-else>
       <v-snackbar outlined :timeout="10000" v-model="TabSnackbar">
         Просмотрите для начала все стороны
         <template v-slot:action="{ attrs }">
@@ -22,16 +22,16 @@
       </v-snackbar>
         <stepper @configure="configure" v-if="!configuration.isConfigured"></stepper>
         <v-container class="pa-0" v-if="configuration.isConfigured">
-            <v-card elevation="0" tile outlined  class="mx-auto pa-0">
-              <v-tabs  fixed-tabs color="black" v-model="tab">
-                <v-tab  :class="[index===0 ? 'br' : undefined, item.side]" v-for="(item, index) in items" :key="index">
+            <v-card style="background-color: #ffffffc7" elevation="0" tile outlined  class="mx-auto pa-0">
+              <v-tabs fixed-tabs color="black" v-model="tab">
+                <v-tab class="font-weight-regular" style="font-size: 16px" :class="[index===0 ? 'br' : undefined, item.side]" v-for="(item, index) in items" :key="index">
                   {{item.tab}}
                 </v-tab>
                 <v-tab class="plug"> </v-tab>
               </v-tabs>
-              <v-tabs-items :style="{marginTop: tab===2 ? '-50px': 0}" v-model="tab">
+              <v-tabs-items style="background-color:transparent " :style="{marginTop: tab===2 ? '-50px': 0}" v-model="tab">
                 <v-tab-item v-for="item in items" :key="item.tab">
-                  <v-card flat>
+                  <v-card color="transparent" flat>
                     <keep-alive>
                       <component @loaded="loadedTabItems++" :saveDataURL="saveDataURL" @order="order()" @reconfigure="reconfigure()" :side="item.side" :image="item.image" v-bind:is="item.content"></component>
                     </keep-alive>
@@ -147,7 +147,9 @@ export default {
 </script>
 
 <style scoped>
-
+/deep/.theme--light.v-tabs > .v-tabs-bar {
+  background-color: transparent;
+}
 .br{
   border-right: thin solid rgba(0, 0, 0, 0.12);
 }
@@ -183,11 +185,11 @@ export default {
 .plug{
   display: none;
 }
-.container.orderingContainer {
+/*.container.orderingContainer {
   box-shadow:0 9px 12px -6px rgba(0, 0, 0, 0.04),0 19px 29px 2px rgba(0, 0, 0, 0),0 7px 36px 6px rgba(0, 0, 0, 0.05) !important;
   background: #fbfbfb;
   background-image: linear-gradient(rgba(229, 229, 229, 0.7) .1em, transparent .1em), linear-gradient(90deg, rgba(229, 229, 229, 0.7) .1em, transparent .1em);
   background-size: 2.4em 2.4em;
-}
+}*/
 
 </style>

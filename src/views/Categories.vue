@@ -1,97 +1,116 @@
 <template>
-  <v-container class="mt-7">
-    <v-row>
-      <v-col sm="12" md="3" :key="index" v-for="(item, index) in categories">
-        <v-card style="cursor: pointer" elevation="0"  :to="'categories/' + item.categoryURL" color="transparent" min-height="400">
-          <div style="transition: .5s"
-            @mouseenter="activeIndex = index"
-            @mouseleave="activeIndex = null"
-            :style="{height: activeIndex === index? '400px': '100px',
-            paddingTop: activeIndex === index ? '50px': '10px'}" class="text">
-            <v-btn v-if="false" :style="{transform:  activeIndex === index ? 'rotate(180deg)': undefined}"
-                 @click="activeIndex === index ? activeIndex = null: activeIndex = index"
-                 style="top: 5px; right: 5px; transition: .5s" icon absolute right>
-              <v-icon size="18">
-                fas fa-chevron-up
-              </v-icon>
-            </v-btn>
-            <div class="title">
-              {{item.category}}
-            </div>
-            <div class="subtitle-1">
-              {{item.description}}
-            </div>
-          </div>
-            <v-img class="preview" :src="item.image">
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular indeterminate color="black lighten-5"></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-        </v-card>
-      </v-col>
-    </v-row>
+  <v-container  class="mt-7 px-0">
+    <div style="justify-content: center; display: flex; align-items: center">
+      <v-card ref="categoryImage"  elevation="20"  class="categoryImage rounded-r-0" height="450" width="270">
+        <v-img v-if="categoriesLoaded" height="450" :src="categories[activeIndex].image"></v-img>
+      </v-card>
+      <v-card ref="categories" style="z-index: 2" class="py-5 categories" elevation="20" height="500" width="350">
+        <div :ref="`categoryItem${index}`" class="title categoryItem mb-2 font-weight-regular text-center text-uppercase"
+             :key="index" v-for="(item, index) in categories"
+             @click="changeCategory(index)">
+          {{item.category}}
+        </div>
+      </v-card>
+      <v-card style="display: flex; flex-direction: column; align-items: center; justify-content: center" ref="categoryDescription" elevation="20" class="categoryDescription rounded-l-0  px-8" height="450" width="270">
+          <div class="title text-uppercase text-center mb-3">Описание</div>
+          <div v-if="categoriesLoaded" class="text-center subtitle-1">{{categories[activeIndex].description}}</div>
+          <v-btn v-if="categoriesLoaded" height="40" :to="'/categories/'+categories[activeIndex].categoryURL" width="200" class="mt-5" outlined>Перейти</v-btn>
+      </v-card>
+    </div>
   </v-container>
 </template>
 
 <script>
+import Velocity from "velocity-animate";
+
 export default {
   name: "Categories",
+  props:{
+    animationDirection: String
+  },
   data(){
-    return{
-      hover: false,
-      activeIndex: null
+    return {
+      animatedImages: [],
+      categoriesLoaded: false,
+      animationComplete: false,
+      activeIndex: 0,
+      delay: 100,
     }
+  },
+  mounted() {
+    this.animateSelector()
   },
   computed:{
     categories(){
+      for (let item of this.$store.getters.categories){
+        item.imageLoaded = false
+      }
       return this.$store.getters.categories
     }
   },
+  methods:{
+    changeCategory(index){
+      Velocity(this.$refs.categoryDescription.$el, {translateX: [-270, 0]}, {duration: 800})
+      Velocity(this.$refs.categoryImage.$el, {translateX: [270, 0]}, {duration: 800})
+      .then(() => {
+        this.activeIndex = index
+        Velocity(this.$refs.categoryDescription.$el, {translateX: [0, -270]}, {duration: 800, delay: 300})
+        Velocity(this.$refs.categoryImage.$el, {translateX: [0, 270]}, {duration: 800, delay: 300})
+      })
+    },
+    animateSelector(done){
+        Velocity(this.$refs.categories.$el, {scale: [1, 0]} , {duration: 500, delay: this.animationDirection === 'center' ? 2000: 500}, {complete: done})
+      }
+  },
   created() {
     this.$store.dispatch('GET_CATEGORIES')
+  },
+  watch: {
+    categories(){
+      if (this.categoriesLoaded === false){
+        this.$nextTick(() =>{
+          let delay = this.animationDirection === 'center' ? 2000 : 500
+            for (let [key, value] of Object.entries(this.$refs)){
+                if (key.includes('categoryItem')){
+                  delay+=100
+                  Velocity(value[0], {opacity: [1, 0], translateY: [0, 10]}, {duration: 500, delay: delay})
+                }
+            }
+          Velocity(this.$refs.categoryDescription.$el, {opacity: [1,0]}, {delay: delay})
+          Velocity(this.$refs.categoryImage.$el, {opacity: [1,0]}, {delay: delay})
+          Velocity(this.$refs.categoryDescription.$el, {translateX: [0, -270]}, {duration: 800})
+          Velocity(this.$refs.categoryImage.$el, {translateX: [0, 270]}, {duration: 800})
+          this.categoriesLoaded = true
+        })
+      }
+
+    }
   }
 }
 </script>
 
 <style scoped>
-/deep/.v-image.v-responsive.preview.theme--light {
-  position: absolute;
-  height: 100%;
-  top: 0;
+.categoryItem{
+  transform: translateY(10px);
+  opacity: 0;
 }
-.text{
-  z-index: 2;
-  position: relative;
-  text-align: center;
-  padding: 15px 10px;
-  background-color: #ffffffe6;
-  border-top: 1px solid #e1e1e1;
-  border-radius: 0 !important;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+.categoryItem:hover{
+  transition: 1s;
+  cursor: pointer;
 }
-.text::after{
-  content: '';
-  height: 90px;
-  width: 100%;
-  position: absolute;
-  background: linear-gradient(#fff0, #ffffffa3);
-  bottom: 0;
-  left: 0;
+.categoryDescription{
+  transform: translateX(-270px);
+  opacity: 0;
 }
-
-/deep/.v-sheet.v-card:not(.v-sheet--outlined) {
-  border: 1px solid #ababab !important;
-  border-radius: 15px;
-  overflow: hidden;
-
+.categoryImage{
+  transform: translateX(270px);
+  opacity: 0;
+ }
+.categories{
+  transform: scale(0);
 }
-/deep/.v-card.v-sheet.theme--light.transparent {
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
+/deep/.text-center.subtitle-1 {
+  font-size: 18px !important;
+  font-weight: 300;
 }
 </style>
