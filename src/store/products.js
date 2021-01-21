@@ -4,12 +4,17 @@ export default {
         products: [],
         filters: [],
         wishlist: [],
+        lastProduct: null
     },
     mutations:{
+        shuffleProducts(state, payload) {
+            state.products = payload
+        },
         ADD_PRODUCT(state, payload){
-            if (state.products.filter(e => e.url === payload.url).length <= 0) {
+            state.products.push(payload)
+/*            if (state.products.filter(e => e.url === payload.url).length <= 0) {
                 state.products.push(payload)
-            }
+            }*/
         },
         SET_FILTER(state, payload){
             state.filters = payload
@@ -26,6 +31,9 @@ export default {
                     state.wishlist.splice(i, 1);
                 }
             }
+        },
+        SET_LAST(state, payload){
+            state.lastProduct = payload
         }
     },
     actions: {
@@ -42,12 +50,15 @@ export default {
                     .finally(() => commit('SET_PROCESSING', false))
             })
         },
-        GET_PRODUCTS({commit}, payload){
-            commit('SET_PROCESSING', true)
+        CLEAR_LIST({commit}) {
             commit('CLEAR_LIST')
+        },
+        GET_PRODUCTS({commit, state}, payload){
+            commit('SET_PROCESSING', true)
             if (payload.tags!==undefined && payload.tags.length!==0){
                 Vue.prototype.$db
                     .collection(payload.category)
+                    .limit(10)
                     .where("tags", "array-contains-any", payload.tags)
                     //same indexes
                     //.where("totalPrice", ">=", parseInt(payload.price[0]))
@@ -74,40 +85,56 @@ export default {
                         if (doc.data().url){
                             commit('ADD_PRODUCT', doc.data())
                         }
-
                     })
                    })
                     .catch(error => commit('SET_ERROR', error))
                     .finally(() => commit('SET_PROCESSING', false))
             }
             else{
-                Vue.prototype.$db
-                    .collection(payload.category)
-                    .get()
-                    .then((querySnapshot) => {
-                    querySnapshot.forEach((doc) => {
-                        if (doc.data().url){
-                            commit('ADD_PRODUCT', doc.data())
-                        }
-                    })
-                })
-                    .catch(error => commit('SET_ERROR', error))
-                    .finally(() => commit('SET_PROCESSING', false))
+                if (!state.lastProduct){
+                    Vue.prototype.$db
+                        .collection(payload.category)
+                        .orderBy("url", "asc")
+                        .limit(13)
+                        .get()
+                        .then((querySnapshot) => {
+                            commit('SET_LAST', querySnapshot.docs[querySnapshot.docs.length-1])
+                            querySnapshot.forEach((doc) => {
+                                let data = doc.data()
+                                if (data.url){
+                                    commit('ADD_PRODUCT', data)
+                                }
+                            })
+                        })
+                        .catch(error => commit('SET_ERROR', error))
+                        .finally(() => {
+                            commit('SET_PROCESSING', false)
+                        })
+                }
+                else {
+                    Vue.prototype.$db
+                        .collection(payload.category)
+                        .orderBy("url", "asc")
+                        .startAfter(state.lastProduct)
+                        .limit(3)
+                        .get()
+                        .then((querySnapshot) => {
+                            commit('SET_LAST', querySnapshot.docs[querySnapshot.docs.length-1])
+                            querySnapshot.forEach((doc) => {
+                                let data = doc.data()
+                                if (data.url){
+                                    commit('ADD_PRODUCT', data)
+                                }
+                            })
+                        })
+                        .catch(error => commit('SET_ERROR', error))
+                        .finally(() => {
+                            commit('SET_PROCESSING', false)
+                        })
+                }
+
             }
 
-        },
-        GET_DATA(){
-            /*Vue.prototype.$db.collection("futbolki")
-            .where("tags", "array-contains-any", ["belyj"])
-            .where("totalPrice", ">=", 135)
-            .where("totalPrice", "<=", 180)
-            .get()
-            .then((querySnapshot) => {
-                // eslint-disable-next-line no-unused-vars
-                querySnapshot.forEach((doc) => {
-                   console.log(doc.data());
-                })
-             });*/
         },
         FIND_PRODUCT({commit, getters}, payload){
             commit('SET_PROCESSING', true)

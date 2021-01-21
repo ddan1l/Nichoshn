@@ -2,19 +2,49 @@
   <v-container>
     <v-row>
       <v-col v-animate  sm="4">
-        <v-card color="blue" height="200"></v-card>
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
       </v-col>
       <v-col v-animate sm="6">
-        <v-card color="blue" height="200"></v-card>
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
       </v-col>
       <v-col v-animate sm="2">
-        <v-card color="blue" height="200"></v-card>
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
       </v-col>
-      <v-col v-animate sm="5">
-        <v-card color="blue" height="200"></v-card>
+      <v-col  v-animate sm="5">
+        <v-card data-aos="fade-up" color="blue" height="200"></v-card>
       </v-col>
       <v-col v-animate sm="7">
-        <v-card color="blue" height="200"></v-card>
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate  sm="4">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate sm="6">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate sm="2">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col  v-animate sm="5">
+        <v-card data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate sm="7">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate  sm="4">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate sm="6">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate sm="2">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col  v-animate sm="5">
+        <v-card data-aos="fade-up" color="blue" height="200"></v-card>
+      </v-col>
+      <v-col v-animate sm="7">
+        <v-card  data-aos="fade-up" color="blue" height="200"></v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -22,6 +52,8 @@
 
 <script>
 import Velocity from "velocity-animate";
+import AOS from "aos";
+import 'aos/dist/aos.css'
 
 export default {
   name: "Novelties",
@@ -46,6 +78,7 @@ export default {
   },
   mounted() {
     this.animate()
+    AOS.init();
   },
   methods:{
     animate(done){

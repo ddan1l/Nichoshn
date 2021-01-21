@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-divider class="mt-7 mb-3">''</v-divider>
+    <h2></h2>
+<!--    <v-divider class="mt-7 mb-3">''</v-divider>
     <v-row justify="space-between" class="px-3">
       <v-menu :close-on-content-click='false' offset-y>
         <template v-slot:activator="{ attrs, on }">
@@ -13,7 +14,7 @@
             <v-list-item class="pa-0 pr-5" v-for="(item, index) in filters.sizes" :key="index">
               <template v-slot:default="{ active }">
                 <v-list-item-content>
-                  <v-list-item-subtitle class="black--text font-weight-light pl-6">
+                  <v-list-item-subtitle class="black&#45;&#45;text font-weight-light pl-6">
                     {{ item.size }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -36,7 +37,7 @@
             <v-list-item class="pa-0 pr-5" v-for="(item, index) in filters.components" :key="index">
               <template v-slot:default="{ active }">
                 <v-list-item-content>
-                  <v-list-item-subtitle class="black--text font-weight-light pl-6">
+                  <v-list-item-subtitle class="black&#45;&#45;text font-weight-light pl-6">
                     {{ item.component }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
@@ -60,7 +61,7 @@
             <v-list-item class="pa-0 pr-5" v-for="(item, index) in filters.colors" :key="index">
               <template v-slot:default="{ active }">
                 <v-list-item-content>
-                  <v-list-item-subtitle class="black--text font-weight-light pl-6">
+                  <v-list-item-subtitle class="black&#45;&#45;text font-weight-light pl-6">
                     <span style="width: 12px; height: 12px; display: inline-block; border: 1px solid" class="mr-1"
                           :style="{backgroundColor: item.hex}"></span>
                     {{ item.color }}
@@ -100,7 +101,7 @@
             <v-list-item class="pa-0 pr-5" v-for="(item, index) in filters.colors" :key="index">
               <template v-slot:default="{ active }">
                 <v-list-item-content>
-                  <v-list-item-subtitle class="black--text font-weight-light pl-6">
+                  <v-list-item-subtitle class="black&#45;&#45;text font-weight-light pl-6">
                     <span style="width: 12px; height: 12px; display: inline-block; border: 1px solid" class="mr-1"
                           :style="{backgroundColor: item.hex}"></span>
                     {{ item.color }}
@@ -116,7 +117,7 @@
       </v-menu>
     </v-row>
     <v-divider class="mx-0 mt-3">''</v-divider>
-    <list :products="products"></list>
+    <list :products="products"></list>-->
   </div>
 </template>
 
@@ -125,6 +126,7 @@ import List from "@/components/ProductList/List"
 
 export default {
   components: {
+    // eslint-disable-next-line vue/no-unused-components
     List
   },
   props: {
@@ -245,6 +247,7 @@ export default {
     },
   },
   created() {
+    console.log("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSsss")
     this.$store.dispatch('GET_FILTERS', {
       category: this.categoryURL
     }).then(() => {

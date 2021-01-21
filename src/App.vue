@@ -38,7 +38,9 @@ export default {
      if(this.animationDirection === 'left'){
        width = - window.innerWidth
      }
-      Velocity(el, {translate: [0, width]}, {duration: 500}, { complete: done })
+      Velocity(el, {translate: [0, width]}, {duration: 500}, { complete: done }).then(()=>{
+        el.style.translate = 'none'
+      })
       el.style.position = 'relative'
     },
     leave(el, done) {

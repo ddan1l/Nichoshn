@@ -1,13 +1,15 @@
 <template>
-  <div>
-    <div class="video">
-      <video ref="video"  muted loop>
+  <div v-scroll="handleScroll">
+    <div class="gray"></div>
+    <!--      <div class="video">
+    <v-img src="../../assets/bacl.jpg"></v-img>-->
+<!--      <video ref="video"  muted loop>
         <source src="../../assets/homeVideo3.mp4" type="video/mp4">
         Your browser does not support HTML5 video.
       </video>
-    </div>
-    <v-btn color="black" outlined @click="animate= !animate" style="position: absolute; top: 20px; right: 20px; z-index: 15">toggle</v-btn>
-    <v-btn color="black" outlined @click="pause= !pause" style="position: absolute; top: 64px; right: 20px; z-index: 5">video: {{pause}}</v-btn>
+    </div>-->
+<!--   <v-btn color="black" outlined @click="animate= !animate" style="position: absolute; top: 20px; right: 20px; z-index: 15">toggle</v-btn>-->
+<!--  <v-btn color="black" outlined @click="pause= !pause" style="position: absolute; top: 64px; right: 20px; z-index: 5">video: {{pause}}</v-btn>-->
     <v-dialog v-model="authDialog" max-width="500">
       <Identify/>
     </v-dialog>
@@ -22,43 +24,56 @@
         :class="$route.path==='/admin'? 'admin' : undefined"
         :style="{position: $route.path==='/admin'?  'fixed': undefined}"
         color="transparent"
+        height="70"
         flat
-        app
         >
-<!--      <v-app-bar-nav-icon class="hidden-md-and-up" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>-->
-        <v-container>
-          <v-row  align="center"  justify="space-between">
+
+        <div class="wideContainer">
+          <v-row  align="center">
+            <div style="display: flex; align-items: center">
+              <v-btn width="40" height="40" icon>
+                <v-icon size="20" color="black"  @click.stop="drawer = !drawer">
+                  fas fa-bars
+                </v-icon>
+              </v-btn>
+
+              <div class="ml-2 text">Меню</div>
+            </div>
+            <v-spacer></v-spacer>
               <router-link animateHeader to="/" tag="h1">
-                <div style="cursor: pointer" class="logo">
-                  <span>Ничошный</span>
-                   шоп
+                <div class="logo">
+                    <span>Н</span>Ч
                 </div>
               </router-link>
-           <div>
-             <!--  eslint-disable-next-line vue/no-use-v-if-with-v-for-->
+
+<!--           <div>
+             &lt;!&ndash;  eslint-disable-next-line vue/no-use-v-if-with-v-for&ndash;&gt;
              <v-btn animateHeader :color="item.color" height="40" v-for="(item, index) in navLinks" active-class="activeLink" :key="index" class="sectionLink"  tile text :to="item.route">
                {{item.name}}
              </v-btn>
-           </div>
-            <div>
+           </div>-->
 
-              <v-btn animateHeader to="/wishlist" x-small text fab class="pa-5 sectionLink ">
-                <v-icon dark>
-                  far fa-heart
-                </v-icon>
-              </v-btn>
-              <v-btn animateHeader :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
-                     x-small text fab  class="pa-5 mr-2 ml-2 sectionLink"
-                     @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
-                <v-icon dark>
-                  far fa-user
-                </v-icon>
-              </v-btn>
-              <v-btn animateHeader to="/basket" x-small text fab class="pa-5 sectionLink">
-                <v-icon dark>
-                  $shoppingBag
-                </v-icon>
-              </v-btn>
+              <div style="display: flex; align-items: center">
+                  <v-btn animateHeader :style="{border: $route.path === '/profile' ? '1px solid': 'none' }"
+                         x-small text fab  class="pa-5 mr-2 ml-2 sectionLink"
+                         @click="isAuthenticated && isEmailVerified  ? $router.push('/profile') : authDialog = true">
+                    <v-icon dark>
+                    $alien
+                    </v-icon>
+                  </v-btn>
+                  <div class="text">Аккаунт</div>
+
+                <v-btn animateHeader to="/basket" x-small text fab class=" ml-5 pa-5 sectionLink">
+                  <v-badge dot  color="red">
+                      <v-icon dark>
+                        $shoppingBag
+                      </v-icon>
+                  </v-badge>
+                </v-btn>
+
+              </div>
+
+
 
                   <!--              <v-tooltip v-model="show"  bottom>
                   <template v-slot:activator="{ on, attrs }">
@@ -92,11 +107,11 @@
                 </template>
                 <span>Корзина</span>
               </v-tooltip>-->
-            </div>
+
 
           </v-row>
 
-        </v-container>
+        </div>
           <!--      <template v-if="!isHidden" class="hidden-sm-and-down red&#45;&#45;text" v-slot:extension>
         <v-container class="mt-3" style="display: flex; justify-content: space-between; max-width: min-content">
           <v-btn :color="item.color"  v-for="(item, index) in navLinks" :key="index" class="sectionLink" height="48" tile text :to="item.route">
@@ -106,7 +121,7 @@
       </template>-->
     </v-app-bar>
     </transition>
-        <!--      <v-navigation-drawer v-model="drawer" absolute temporary >
+      <v-navigation-drawer v-model="drawer" absolute temporary >
         <v-list class="hidden-md-and-up" nav dense>
           <v-list-item-group v-model="group" active-class="deep-purple&#45;&#45;text text&#45;&#45;accent-4">
             <v-list-item  text>
@@ -117,7 +132,7 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-      </v-navigation-drawer>-->
+      </v-navigation-drawer>
   </div>
 </template>
 
@@ -133,7 +148,7 @@ export default {
     return {
       pause: false,
       delay: 0,
-      animate: false,
+      animate: true,
       animatedList: [],
       show: false,
       authDialog: false,
@@ -178,6 +193,9 @@ export default {
 
   },
   methods:{
+    handleScroll(){
+     // this.animate = window.scrollY <= 0;
+    },
     beforeEnter() {
       for (let child of this.animatedList){
          child.style.opacity = 0
@@ -239,10 +257,38 @@ export default {
   },
 }
 </script>
-
+<style>
+.wideContainer{
+  display: flex; justify-content: space-between; width: 100%; padding: 0 60px
+}
+</style>
 <style scoped>
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap');
+.gray {
+  width: 46%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  background-color: #f5f5f5;
+  right: 0;
+}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,900;1,300&display=swap');
+.v-icon.notranslate.mdi.mdi-menu.theme--light {
+  color: black;
+  font-size: 28px;
+}
+.logo{
+  position: absolute;
+  left: 50%;
+  top: 17px;
+  font-size: 24px;
+  transform: translateX(-50%);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+
 .video {
   position: fixed;
   top: 0;
@@ -261,17 +307,12 @@ export default {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.92) 100%);
 }
 
-/deep/.v-btn__content{
-  font-weight: 400 !important ;
-  /*font-family: 'Roboto Condensed', sans-serif !important;*/
+.text{
+  font-weight: 700 !important ;
+  font-family: 'Montserrat', sans-serif !important;
   font-size: 14px;
 }
-.logo {
-  font-size: 28px;
-  font-family: 'Roboto Condensed', sans-serif !important;
-  text-transform: uppercase;
-  font-weight: 300;
-}
+
 /*.logo span{
   font-weight: 300;
   background-color: black;

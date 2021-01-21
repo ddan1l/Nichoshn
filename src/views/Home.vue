@@ -7,13 +7,13 @@
         @leave="leave"
         :css="false">
           <v-row v-show="animate">
-            <v-col animateHome  sm="4">
+            <v-col animateHome sm="4">
               <v-card height="200"></v-card>
             </v-col>
-            <v-col animateHome  sm="8">
+            <v-col animateHome sm="8">
               <v-card  height="200"></v-card>
             </v-col>
-            <v-col animateHome  sm="6">
+            <v-col animateHome sm="6">
               <v-card height="200"></v-card>
             </v-col>
             <v-col animateHome  sm="6">

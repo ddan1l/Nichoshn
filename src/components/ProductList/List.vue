@@ -2,7 +2,7 @@
   <div>
   <transition-group class="layout" style="flex-wrap: wrap"  name="product-animation" tag="div">
     <v-flex class="product-animation-item pl-2 mt-5 pr-2"  v-for="product in products" :key="product.url" xs3>
-      <v-card class="product-card" elevation="0">
+      <v-card class="product-card mx-0" elevation="20">
         <router-link :to="{path: $route.path +'/' + product.url, params: {productURL: product.url}}">
           <v-img height="300" style="cursor: pointer" @mouseenter="showSecondImage($event, product.images)" @mouseleave="showFirstImage($event, product.images)" :src="product.images[0].imageURL">
             <template v-slot:placeholder>

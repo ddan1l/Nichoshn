@@ -13,6 +13,7 @@
         <v-card-title class="font-weight-regular px-0">
           Добавить товар
         </v-card-title>
+        <v-btn @click="dump" class="my-5">dump db</v-btn>
         <validation-observer ref="observer">
           <v-form>
             <v-row>
@@ -237,7 +238,7 @@ import {mapGetters} from 'vuex';
 import SnackBar from "@/components/SnackBar";
 import {required, integer, max_value, min_value} from 'vee-validate/dist/rules'
 import {extend, ValidationObserver, ValidationProvider, setInteractionMode} from 'vee-validate'
-
+import Vue from 'vue'
 setInteractionMode('eager')
 extend('required', {
   ...required,
@@ -266,6 +267,7 @@ export default {
   },
   data() {
     return {
+      product: {},
       tempFiles: [],
       status: 'error',
       message: '',
@@ -365,6 +367,7 @@ export default {
                       price: this.price,
                       discount: this.discount
                     }
+                    this.product = JSON.parse(JSON.stringify(product))
                     this.$store.dispatch('ADD_FILTER', {
                       price: this.totalPrice,
                       category: this.getURL(this.selectedCategory),
@@ -423,9 +426,18 @@ export default {
     getURL(val) {
       return this.transliterate(val)
     },
+    dump(){
+      if (this.product) {
+        for (let i = 0; i < 100; i++) {
+          this.product.url = i
+          Vue.prototype.$db.collection('test').doc(i.toString()).set(this.product)
+
+        }
+      }
+
+    },
     removeImage(image) {
       let index = this.images.indexOf(image)
-      console.log(index)
       this.images.splice(index, 1)
     },
     addFile() {
@@ -450,6 +462,7 @@ export default {
     this.$store.dispatch('GET_COLORS')
     this.$store.dispatch('GET_SIZES')
     this.$store.dispatch('GET_COMPONENTS')
+
   },
   computed: {
     totalPrice(){

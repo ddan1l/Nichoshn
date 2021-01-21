@@ -9,12 +9,16 @@ import Palette from '../components/Icons/Palette'
 import Books from '../components/Icons/Books'
 import FilePlus from '../components/Icons/FilePlus'
 import Components from '../components/Icons/Components'
+import Alien from '../components/Icons/Alien'
 
 Vue.use(Vuetify);
 
 export default new Vuetify({
     icons: {
         values: {
+            alien:{
+                component: Alien
+            },
             shoppingBag: {
                 component: ShoppingBag
             },

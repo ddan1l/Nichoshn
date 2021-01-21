@@ -14,6 +14,16 @@ Vue.use(VueCookies)
 Vue.use(VueKonva)
 Vue.use(VNus)
 Vue.config.productionTip = false
+Vue.directive('scroll', {
+  inserted: function (el, binding) {
+    let f = function (evt) {
+      if (binding.value(evt, el)) {
+        window.removeEventListener('scroll', f)
+      }
+    }
+    window.addEventListener('scroll', f)
+  }
+})
 
 const firebaseApp =  firebase.initializeApp(firebaseConfig);
 Vue.prototype.$db = firebaseApp.firestore()
@@ -23,7 +33,4 @@ new Vue({
   store,
   vuetify,
   render: h => h(App),
-  created() {
-    this.$store.dispatch('GET_DATA').then()
-  }
 }).$mount('#app')
