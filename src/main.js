@@ -33,4 +33,8 @@ new Vue({
   store,
   vuetify,
   render: h => h(App),
+  created() {
+    this.$store.dispatch('INIT_AUTH').then()
+  }
 }).$mount('#app')
+

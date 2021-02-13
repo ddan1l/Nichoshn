@@ -96,8 +96,6 @@
               label="Выберите отделение"
           ></v-select>
         </v-col>
-
-
       </v-row>
     </v-container>
 

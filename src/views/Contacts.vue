@@ -9,7 +9,7 @@
         </v-card>
       </v-col>
       <v-col v-animate  sm="4">
-        <v-card color="red"  height="200"></v-card>
+        <v-card color="red" height="200"></v-card>
       </v-col>
       <v-col v-animate  sm="5">
         <v-card  color="red" height="200"></v-card>

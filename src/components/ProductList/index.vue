@@ -149,7 +149,7 @@ export default {
       values: [25, 75],
       sizeFilter: [],
       colorFilter: [],
-      structureFilter: [],
+      componentsFilter: [],
     }
   },
   methods: {
@@ -160,10 +160,10 @@ export default {
         })
       }
       else{
-        if ([...this.sizeFilter, ...this.colorFilter,  ...this.structureFilter ] !== undefined){
+        if ([...this.sizeFilter, ...this.colorFilter,  ...this.componentsFilter ] !== undefined){
           this.$store.dispatch('GET_PRODUCTS', {
             category:  this.categoryURL,
-            tags: [...this.sizeFilter, ...this.colorFilter,  ...this.structureFilter ],
+            tags: [...this.sizeFilter, ...this.colorFilter,  ...this.componentsFilter ],
             price: this.values
           })
         }
@@ -206,9 +206,9 @@ export default {
           for (let obj of this.filters.components) {
             structures.push(obj.url)
           }
-          for (let structureFilter of this.$route.query.structure.split(',')) {
-            if (structures.includes(structureFilter)) {
-              this.structureFilter.push(structureFilter)
+          for (let componentsFilter of this.$route.query.structure.split(',')) {
+            if (structures.includes(componentsFilter)) {
+              this.componentsFilter.push(componentsFilter)
             }
           }
         }
@@ -299,7 +299,7 @@ export default {
       },
       deep: true
     },
-    structureFilter: {
+    componentsFilter: {
       handler: function (value) {
         if (value.length === 0) {
           delete this.$route.query.structure
@@ -325,7 +325,7 @@ export default {
       deep: true
     },
     $route() {
-      this.structureFilter = []
+      this.componentsFilter = []
       this.sizeFilter = []
       this.colorFilter = []
       this.values = []

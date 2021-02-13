@@ -2,12 +2,12 @@
   <v-app>
     <app-header></app-header>
       <v-content class="mt-6">
-        <transition
+<!--        <transition
             @enter="enter"
             @leave="leave"
-            :css="false">
-            <router-view :animationDirection="animationDirection"></router-view>
-        </transition>
+            :css="false">-->
+            <router-view ></router-view>
+<!--        </transition>-->
       </v-content>
   </v-app>
 </template>

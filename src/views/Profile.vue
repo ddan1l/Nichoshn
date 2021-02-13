@@ -31,12 +31,20 @@
 </template>
 
 <script>
+import firebase from 'firebase'
 export default {
   name: "Profile",
   data(){
     return{
       logoutDialog: false
     }
+  },
+  created() {
+    firebase.auth().currentUser.getIdToken(true).then(function(idToken) {
+      console.log(idToken)
+    }).catch(function(error) {
+      console.log(error)
+    });
   },
   methods:{
     signout(){

@@ -1,8 +1,8 @@
 <template>
   <v-container class="pt-0" fluid full-height>
     <v-layout row wrap align-center>
-      <v-toolbar  class="mb-4 pa-0" dense elevation="0" >
-        <v-btn class="back" block tile color="black" text width="105" height="48" @click="$emit('backLogin')">
+      <v-toolbar height="60"  class="mb-4 pa-0" dense elevation="0" >
+        <v-btn class="back" block tile color="black" text width="105" height="60" @click="$emit('backLogin')">
           <v-icon class="mr-2">mdi-arrow-left</v-icon>
           Назад
         </v-btn>
@@ -129,6 +129,10 @@ export default {
 </script>
 
 <style scoped>
+/deep/button.back.v-btn.v-btn--block.v-btn--flat.v-btn--text.v-btn--tile.theme--light.v-size--default.black--text{
+  height: 60px !important;
+  padding-top: 15px !important;
+}
 /deep/.mb-4.v-sheet.theme--light.elevation-0.v-toolbar.v-toolbar--dense {
   border-bottom: 1px solid #e6e6e6;
   background-color: #f6f6f6;

@@ -28,18 +28,15 @@
       </v-layout>
     </div>
     <div class="col-6">
-      <div class="modal product-title d-block text-center pb-0 mt-5" >{{product.title}}</div>
+      <div class="modal product-title d-block text-center pb-0 mt-5" >{{product.name}}</div>
       <div style="font-size: 14px" class="modal product-category d-block text-center pb-0 mt-1 black--text" >{{product.category}}</div>
-      <div class="priceBlock mt-4" >
-        <div class="product-price"
-             :style="{'text-decoration': product.discount ? 'line-through' : 'none',color: product.discount ? '#7f7f7f' : 'black',fontSize: product.discount ? '14px !important' : '16px !important'}">
-          {{product.price}} ₴ </div>
-        <span class="ml-1" style="text-decoration: none; font-size: 16px" v-if="product.discount">{{getDiscount(product.discount, product.price)}} ₴</span>
+      <div class="priceBlock">
+        <div class="productPrice mt-2"><span v-if="product.discount" class="discount">{{product.price}}</span> {{product.totalPrice}} ₴</div>
       </div>
       <v-divider class="mx-4 mt-4 mb-4">''</v-divider>
       <div style="display: flex; justify-content: center">
         <div class="ml-2 mr-2" v-for="(item, index) in product.colors" :key="index">
-          <div style="font-size: 14px">{{item.color}}</div>
+          <div class="color mb-2">{{item.color}}</div>
           <div class="colorDisplay" :style="{backgroundColor:item.hex }"></div>
         </div>
       </div>
@@ -57,9 +54,9 @@
       </div>
       <v-btn color="black" @click="toBasket" style="width: 90%; left: 5%" tile outlined class="mt-5 px-20" >Добавить в корзину</v-btn>
       <v-btn @click="toWishlist" dark style="width: 90%; left: 5%" tile  class="mt-5 px-20" >Добавить в избранное</v-btn>
-      <div style="font-size: 13px; font-weight: 700; color: black" class="product-category mt-3">Состав: <span style="font-weight: 500; font-size: 12px">{{product.structure.description}}</span>  </div>
+      <div style="font-size: 13px; font-weight: 700; color: black" class="text-center product-category mt-3">Состав: <span style="font-weight: 500; font-size: 12px">{{product.components.description}}</span>  </div>
     </div>
-    <v-btn v-if="isModal" text style="position: absolute; right: 5px; width: min-content" @click="closeModal">
+    <v-btn v-if="isModal" text style="position: absolute; right: 0px; top: 0px; width: min-content" @click="closeModal">
       <v-icon>
         fas fa-times
       </v-icon>
@@ -128,6 +125,22 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,900;1,300&display=swap');
+span.discount {
+  text-decoration: line-through;
+  color: #a2a2a2;
+  font-weight: 400;
+}
+.modal.product-category {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+}
+.product-title{
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+}
 .activeImage{
   border: 1px solid #272727;
   transform: scale(0.9);
@@ -152,24 +165,26 @@ export default {
     transform: translateX(0px);
   }
   33% {
-    transform: translateX(-10px);
+    transform: translateX(-5px);
   }
   66%{
-    transform: translateX(10px);
+    transform: translateX(5px);
   }
   100% {
     transform: translateX(0px);
   }
+}
+.priceBlock span{
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500 !important;
 }
 .priceBlock{
   display: flex;
   justify-content: center;
   margin: 2px 0;
 }
-.priceBlock span{
-  font-size: 14px ;
-  font-weight: 300 !important;
-}
+
 
 .selected{
   border: 1px solid black;

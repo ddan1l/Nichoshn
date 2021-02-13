@@ -1,6 +1,7 @@
 <template>
   <div class="wideContainer">
-    <div class="productsCount">70 товаров</div>
+    <div  class="bigLogo">Ничошный</div>
+    <div class="productsCount">{{productsCount}} товаров</div>
     <v-container class="pa-0">
       <v-dialog width="900px" persistent v-model="dialog">
         <v-card tile width="900px" style="margin: 0 auto" elevation="0" >
@@ -10,38 +11,74 @@
       <v-row style="min-height: calc(100vh - 74px);">
         <v-col ref="productsPanel" class="pb-0" sm="8">
           <v-card color="transparent" elevation="0" min-height="100%" class="rounded-b-0" width="100%">
-            <v-container v-scroll="handleScroll" class="px-0">
+<!--            <v-row v-if="processing" class="fill-height ma-0" align="center" justify="center">
+              <v-progress-circular size="60" indeterminate color="black lighten-5"></v-progress-circular>
+            </v-row>-->
+            <v-row  data-aos="fade-up"  v-if="products.length <= 0 && !processing" class="fill-height ma-0 notFound" align="center" justify="center">
+                  Ничего не найдено ...
+            </v-row>
+            <v-container  v-scroll="handleScroll" class="px-0">
               <v-row class="pt-4">
                 <v-col class="mb-10 ml-2" sm="12">
-                    <div class="categoryTitle">{{categoryInfo.category}}</div>
+                    <div v-if="categoryInfo.category" data-aos="fade-up"  class="categoryTitle">{{categoryInfo.category}}</div>
                 </v-col>
-                <v-col class="px-5" data-aos="fade-up" sm="4" :key="index" v-for="(product, index) in products">
-                  <v-card :style="{background: createBackground(index)}" @click="modalProduct = product; dialog = true" style="cursor: pointer" elevation="0" class="px-5 pb-0 pt-6 rounded-0" width="100%" >
-                    <v-img @mouseenter="increaseImage"  @mouseleave="decreaseImage" :src="product.images[0].imageURL"></v-img>
-                  </v-card>
-                  <div class="productTitle mt-3">{{product.title}}</div>
-                  <div class="productPrice mt-1 mb-3">{{product.price}} ₴</div>
+                <v-col sm="12">
+                  <v-row v-if="products.length>0">
+                    <v-col v-product-ref  class="px-5" data-aos="fade-up" sm="4" :key="index" v-for="(product, index) in products">
+                      <v-card :style="{background: createBackground(index)}" @click="modalProduct = product; dialog = true" style="cursor: pointer" elevation="1" class="px-5 pb-0 pt-6 rounded-0" width="100%" >
+                        <v-img min-height="250" @mouseenter="increaseImage"  @mouseleave="decreaseImage" :src="product.images[0].imageURL">
+                          <template v-slot:placeholder>
+                            <v-row class="fill-height ma-0" align="center" justify="center">
+                              <v-progress-circular indeterminate color="black lighten-5"></v-progress-circular>
+                            </v-row>
+                          </template>
+                        </v-img>
+                      </v-card>
+                      <div class="productTitle mt-3">{{product.name}}</div>
+                      <div class="productPrice mt-1 mb-3"><span v-if="product.discount" class="discount">{{product.price}}</span> {{product.totalPrice}} ₴</div>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-container>
           </v-card>
         </v-col>
-        <v-col ref="filterPanel" v-scroll="fixFilterPanel" class="pb-0 pl-5" sm="4">
+        <v-col ref="filterPanel" v-scroll="fixFilterPanel" class="pb-0 pl-10" sm="4">
           <v-card color="transparent" elevation="0" class="rounded-b-0 px-10 pt-9" min-height="100%" width="100%">
-            <div class="sorting mt-6">Сортировать по</div>
-            <div class="filtering mt-16 pt-3 mb-2">Фильтрация</div>
+            <v-expansion-panels v-model="sortPanel" accordion>
+            <v-expansion-panel>
+              <v-expansion-panel-header class="sorting">
+                Сортировать
+                <span class="ml-3 sortingChevron">
+                  <v-icon ref="sortingChevron" size="11">
+                    fas fa-chevron-down
+                  </v-icon>
+                </span>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <v-list color="transparent" class="py-0">
+                  <v-list-item class="px-0">
+                    <v-btn style="overflow: hidden" outlined class="novelties text-uppercase">Новинки
+                      <span ref="noveltiesBadge" class="noveltiesBadge">New</span>
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+            </v-expansion-panels>
+            <div class="filtering mt-14 pt-3 mb-2">Фильтрация</div>
 <!--            <v-btn outlined class="mt-5" @click="shuffle">Перемещать</v-btn>-->
-            <v-expansion-panels v-model="filterPanels"  accordion multiple>
-              <v-expansion-panel readonly >
-                <v-expansion-panel-header style="cursor: default" >
+            <v-expansion-panels accordion multiple>
+              <v-expansion-panel >
+                <v-expansion-panel-header >
                   Цвета
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <div style="display: flex; flex-wrap: wrap">
-                    <div    style="position: relative"
-                            :style="{backgroundColor: color.hex}" class="color mr-6 my-1" :key="index" v-for="(color, index) in filters.colors"
-                            :class="{activeColor: colorFilter.includes(color.url)}"
-                            @click="handleFilter(color.url, 'colorFilter')">
+                    <div style="position: relative"
+                         :style="{backgroundColor: color.hex}" class="color mr-6 my-1" :key="index" v-for="(color, index) in filters.colors"
+                         :class="{activeColor: colorFilter.includes(color.url)}"
+                         @click="handleFilter(color.url, 'colorFilter')">
                     </div>
                   </div>
                 </v-expansion-panel-content>
@@ -66,15 +103,15 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <div style="display: flex; flex-wrap: wrap">
-                    <v-btn :color="structureFilter.includes(item.url)?'white': 'black'" outlined elevation="0" @click="handleFilter(item.url, 'structureFilter')"
-                           :class="{activeFilter: structureFilter.includes(item.url)}"
+                    <v-btn :color="componentsFilter.includes(item.url)?'white': 'black'" outlined elevation="0" @click="handleFilter(item.url, 'structureFilter')"
+                           :class="{activeFilter: componentsFilter.includes(item.url)}"
                            class="component mr-3 my-1" :key="index" v-for="(item, index) in filters.components">
                       {{item.component}}
                     </v-btn>
                   </div>
                 </v-expansion-panel-content>
               </v-expansion-panel>
-              <v-expansion-panel>
+              <v-expansion-panel v-if="filters.maxPrice !== filters.minPrice">
                 <v-expansion-panel-header>
                   Цена
                 </v-expansion-panel-header>
@@ -85,6 +122,7 @@
             </v-expansion-panels>
           </v-card>
         </v-col>
+
       </v-row>
     </v-container>
   </div>
@@ -92,7 +130,7 @@
 </template>
 <script>
 import ProductPreview from "@/components/ProductPreview";
-import lodash from "lodash"
+import Lodash from "lodash"
 import Velocity from "velocity-animate";
 import AOS from 'aos'
 import 'aos/dist/aos.css'
@@ -105,10 +143,19 @@ export default {
   components: {
     ProductPreview
   },
+  directives: {
+    productRef: {
+      inserted(el, binding, vnode) {
+        vnode.context.$store.dispatch('ADD_PRODUCTS_REF', el)
+      }
+    }
+  },
 
   data: function () {
     return {
-      filterPanels: [0],
+      sortPanel: [],
+      priceInit: false,
+      filterInit: false,
       dialog: false,
       modalProduct: {},
       config: {
@@ -127,10 +174,17 @@ export default {
       values: [25, 75],
       sizeFilter: [],
       colorFilter: [],
-      structureFilter: [],
+      componentsFilter: [],
     }
   },
   methods: {
+   async scrollToTop(){
+       await  window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        })
+    },
     createBackground(index){
       index++
       if(Math.floor(index%3) === 0){
@@ -182,31 +236,18 @@ export default {
       }
     },
     shuffle(){
-      this.products = lodash.shuffle(this.products)
+      this.products = Lodash.shuffle(this.products)
     },
     getProducts() {
-
-     // this.$store.dispatch('CLEAR_LIST')
-      if (Object.keys(this.$route.query).length === 0) {
-        this.$store.dispatch('GET_PRODUCTS', {
-          category: this.categoryURL,
-        })
-      }
-      else {
-        if ([...this.sizeFilter, ...this.colorFilter, ...this.structureFilter] !== undefined) {
-          this.$store.dispatch('GET_PRODUCTS', {
-            category: this.categoryURL,
-            tags: [...this.sizeFilter, ...this.colorFilter, ...this.structureFilter],
-            price: this.values
-          })
-        }
-        else {
-          this.$store.dispatch('GET_PRODUCTS', {
-            category: this.categoryURL,
-            price: this.values
-          })
-        }
-      }
+      this.$store.dispatch('GET_PRODUCTS', {
+        categoryURL: this.categoryURL,
+        filter: {
+          price: Lodash.isEqual(this.values[0], this.values[1]) ? [] : [0, 100],
+          components: this.structureFilter,
+          colors: this.colorFilter,
+          sizes: this.sizeFilter
+        },
+      })
     },
     handleFilteringQuery() {
       let sizes = []
@@ -288,6 +329,9 @@ export default {
     processing(){
       return this.$store.getters.getProcessing
     },
+    productsCount(){
+      return this.$store.getters.productsCount
+    },
     products:{
       get() {
         return this.$store.getters.products
@@ -311,7 +355,7 @@ export default {
   created() {
     AOS.init();
     this.$store.dispatch('GET_FILTERS', {
-      category: this.categoryURL
+      categoryURL: this.categoryURL
     }).then(() => {
       this.config.range.max = this.$store.getters.filters.maxPrice
       this.config.range.min = this.$store.getters.filters.minPrice
@@ -321,6 +365,7 @@ export default {
       } else {
         this.values = [this.$route.query.price.split(',')[0], this.$route.query.price.split(',')[1]]
       }
+      this.priceInit = true
       if (Object.keys(this.$route.query).length === 0) {
         this.getProducts()
       } else {
@@ -328,7 +373,15 @@ export default {
       }
     })
   },
- /* watch: {
+  watch:{
+    sortPanel(value){
+      if (value === 0){
+        Velocity(this.$refs.sortingChevron.$el, {rotateZ: ["-180deg"]}, {duration: 100})
+      }
+      if (value === undefined){
+        Velocity( this.$refs.sortingChevron.$el, {rotateZ: ["0deg"] }, {duration: 100 })
+      }
+    },
     sizeFilter: {
       handler: function (value) {
         if (value.length === 0) {
@@ -344,7 +397,11 @@ export default {
           this.$route.query.size = replaced.join()
         }
         this.setQueryParams()
-        this.getProducts()
+        this.scrollToTop().then(()=>{
+          this.$store.dispatch('CLEAR_LIST').then(()=>{
+            this.getProducts()
+          })
+        })
       },
       deep: true
     },
@@ -356,7 +413,11 @@ export default {
           this.$route.query.color = value.join()
         }
         this.setQueryParams()
-        this.getProducts()
+        this.scrollToTop().then(()=>{
+          this.$store.dispatch('CLEAR_LIST').then(()=>{
+            this.getProducts()
+          })
+        })
       },
       deep: true
     },
@@ -368,7 +429,11 @@ export default {
           this.$route.query.structure = value.join()
         }
         this.setQueryParams()
-        this.getProducts()
+        this.scrollToTop().then(()=>{
+          this.$store.dispatch('CLEAR_LIST').then(()=>{
+            this.getProducts()
+          })
+        })
       },
       deep: true
     },
@@ -377,10 +442,17 @@ export default {
         if ((parseInt(this.values[0]) === this.config.range.min && parseInt(this.values[1]) === this.config.range.max)
             || Number.isNaN(parseInt(this.values[1])) || Number.isNaN(parseInt(this.values[0]))) {
           delete this.$route.query.price
-        } else {
+        }
+        else {
           this.$route.query.price = [parseInt(this.values[0]), parseInt(this.values[1])].join()
         }
-        this.getProducts()
+        if (!this.priceInit){
+          this.scrollToTop().then(()=>{
+            this.$store.dispatch('CLEAR_LIST').then(()=>{
+              this.getProducts()
+            })
+          })
+        }
         this.setQueryParams()
       },
       deep: true
@@ -391,21 +463,121 @@ export default {
       this.colorFilter = []
       this.values = []
     }
-  },*/
+  },
 
 }
 </script>
 
 <style scoped>
-
+span.discount {
+  text-decoration: line-through;
+  color: #a2a2a2;
+  font-weight: 400;
+}
+/deep/.row.fill-height.ma-0.notFound.align-center.justify-center {
+  position: absolute;
+  left: 30%;
+  font-family: "Montserrat";
+  font-size: 20px;
+}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,900;1,300&display=swap');
+*{
+  scroll-behavior: smooth;
+}
+/deep/.v-progress-circular{
+  position: absolute;
+  top: 50%;
+}
+.bigLogo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 76px;
+  position: absolute;
+  color: #fff;
+  transform: rotate(-90deg);
+  right: -250px;
+  top: 250px;
+  text-transform: uppercase;
+}
+.noveltiesBadge {
+  background-color: red;
+  font-size: 9px;
+  padding: 2px 10px;
+  text-transform: none;
+  color: white;
+  font-weight: 600;
+  position: absolute;
+  right: -30px;
+  bottom: -5px;
+  transform: rotate(-45deg) ;
+}
+/deep/.v-list.v-sheet.theme--light {
+  background-color: white;
+}
+/deep/.v-icon.notranslate.fas.fa-tag.theme--light.red--text {
+  background: -moz-linear-gradient(top, #e72c83 0%, #a742c6 100%);
+  background: -webkit-linear-gradient(top, #e72c83 0%,#a742c6 100%);
+  background: linear-gradient(to bottom, #e72c83 0%,#a742c6 100%);
+  background-clip: border-box;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  height: 30px;
+}
+.salesContainer {
+  position: absolute;
+  top: 22px;
+  right: -41px;
+  z-index: 1;
+  transform-origin: left top;
+  transform: rotate(230deg);
+}
+.salesIconRope {
+  width: 1px;
+  height: 25px;
+  display: block;
+  background-color: #000;
+  transform-origin: left top;
+  border: 1px solid;
+}
+.salesIcon::after {
+  content: '10%';
+  position: absolute;
+  color: white;
+  font-size: 8px;
+  left: 10px;
+  transform: rotate(45deg);
+  font-weight: 900;
+  top: 10px;
+  letter-spacing: -1px;
+}
+.salesIcon{
+  position: relative;
+  margin-left: -2px;
+  rotate: 0deg;
+/*  transform: scaleX(0.7);
+  rotate: -10deg;
+  translate: -1px -2px;*/
+}
+.sales::after{
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  display: block;
+  right: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: black;
+}
+/deep/.v-icon.notranslate.fas.fa-chevron-down.theme--light {
+  margin-top: 1px !important;
+}
 /deep/.px-5.pb-0.pt-6.rounded-0.v-card.v-card--link.v-sheet.theme--light.elevation-0 {
   border: 1px solid #f5f5f5;
 }
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,900;1,300&display=swap');
-/deep/.v-image {
-  z-index: 5;
-  filter: drop-shadow(1px 1px 0 #0003);
-}
+
 /deep/.px-5.pb-0.pt-6.v-card.v-card--link.v-sheet.theme--light.elevation-0{
   overflow: hidden;
 }
@@ -495,7 +667,7 @@ export default {
   margin: 40px 0;
 }
 
-.component, .size{
+.component, .size, .sales, .novelties{
   text-transform: uppercase;
   border: 2px solid #242424;
   padding: 5px 15px;
@@ -540,7 +712,6 @@ export default {
   font-size: 14px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  margin-left: -60px;
 }
 .filtering{
   font-family: 'Montserrat', sans-serif;

@@ -1,5 +1,4 @@
 import firebase from "firebase";
-import Vue from 'vue'
 export default{
     state: {
         user: {
@@ -28,6 +27,29 @@ export default{
         },
     },
     actions: {
+        GET_ID_TOKEN({commit, dispatch}){
+            return new Promise(resolve => {
+                if (!firebase.auth().currentUser){
+                    dispatch('INIT_AUTH').then(()=>{
+                        firebase.auth().currentUser.getIdToken(true).then((idToken)=> {
+                            resolve(idToken)
+                        }).catch((error) => {
+                            commit('SET_ERROR', error)
+                        });
+                    })
+                }
+                else{
+                    dispatch('INIT_AUTH').then(()=>{
+                        firebase.auth().currentUser.getIdToken(true).then((idToken)=> {
+                            resolve(idToken)
+                        }).catch((error) => {
+                            commit('SET_ERROR', error)
+                        });
+                    })
+                }
+
+            })
+        },
         INIT_AUTH({dispatch}){
             return new Promise((resolve) => {
                 firebase.auth().onAuthStateChanged((user) => {
@@ -36,8 +58,29 @@ export default{
                 });
             })
         },
-        ADD_USER({state}){
-            Vue.prototype.$db.collection("users").doc(state.user.uid).set({}, {merge: true}).then()
+        ADD_USER({state, commit}){
+            commit('SET_PROCESSING', true)
+            let raw = JSON.stringify({
+                uid: state.user.uid,
+            })
+            let url = 'http://localhost/user/addUser.php'
+            let requestOptions = {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: raw,
+            }
+             fetch(url, requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status.toString() === 'ERROR'){
+                        commit('SET_ERROR', result.message)
+                    }
+                })
+                .catch(error =>  commit('SET_ERROR', error))
+                .finally(() => commit('SET_PROCESSING', false))
          },
         GOOGLE_AUTHENTICATION({commit, dispatch}){
             commit('SET_PROCESSING', true)

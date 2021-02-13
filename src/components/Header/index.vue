@@ -122,9 +122,10 @@
     </v-app-bar>
     </transition>
       <v-navigation-drawer v-model="drawer" absolute temporary >
-        <v-list class="hidden-md-and-up" nav dense>
-          <v-list-item-group v-model="group" active-class="deep-purple&#45;&#45;text text&#45;&#45;accent-4">
-            <v-list-item  text>
+        <v-list nav dense>
+          <v-list-item-group v-model="group" >
+            <v-list-item :to="link.route" v-for="(link, index) in navLinks" :key="index" >
+              {{link.name}}
             </v-list-item>
             <v-list-item @click="signout" v-if="isAuthenticated" text>
               <v-icon color="primary" left>mdi-logout-variant</v-icon>

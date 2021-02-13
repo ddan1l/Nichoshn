@@ -2,9 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Store from "../store/store";
 
-
 Vue.use(VueRouter)
-
 const routes = [
   {
     path: '/',
@@ -29,6 +27,14 @@ const routes = [
       routeLevel: 2
     },
     component: () => import('../views/Categories')
+  },
+  {
+    path: '/basket',
+    name: 'Basket',
+    meta: {
+      routeLevel: 2
+    },
+    component: () => import('../views/Basket')
   },
   {
     path: '/categories/:categoryURL',
