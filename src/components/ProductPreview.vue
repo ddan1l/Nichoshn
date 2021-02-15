@@ -1,5 +1,5 @@
 <template>
-<h1> <v-container>
+<v-container>
   <v-layout row>
     <div class="col-6">
       <v-layout row>
@@ -62,10 +62,11 @@
       </v-icon>
     </v-btn>
   </v-layout>
-</v-container></h1>
+</v-container>
 </template>
 
 <script>
+
 export default {
   name: "ProductPreview",
   props:{
@@ -95,6 +96,10 @@ export default {
         this.sizeError = true
       }
       else if (this.isModal){
+        this.$store.dispatch('ADD_TO_BASKET', {
+          id: this.product.id,
+          selectedSize: this.selectedSize
+        })
         this.closeModal()
       }
     },

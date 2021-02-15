@@ -169,10 +169,10 @@ export default {
           name: 'Категории',
           route: '/categories'
         },
-        {
+/*        {
           name: 'Конструктор',
           route: '/constructor'
-        },
+        },*/
         {
           name: 'Контакты',
           route: '/contacts'

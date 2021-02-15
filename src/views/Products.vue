@@ -3,8 +3,8 @@
     <div  class="bigLogo">Ничошный</div>
     <div class="productsCount">{{productsCount}} товаров</div>
     <v-container class="pa-0">
-      <v-dialog width="900px" persistent v-model="dialog">
-        <v-card tile width="900px" style="margin: 0 auto" elevation="0" >
+      <v-dialog width="1200px" persistent v-model="dialog">
+        <v-card tile width="1200px" style="margin: 0 auto" elevation="0" >
           <product-preview @close="dialog=!dialog" :is-modal="true" :product="modalProduct"></product-preview>
         </v-card>
       </v-dialog>

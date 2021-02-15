@@ -54,14 +54,14 @@ const routes = [
     },
     component: () => import('../views/Product')
   },
-  {
+/*  {
     path: '/constructor',
     name: 'Constructor',
     meta: {
       routeLevel: 5
     },
     component: () => import('../views/Constructor')
-  },
+  },*/
   {
     path: '/contacts',
     name: 'Contacts',

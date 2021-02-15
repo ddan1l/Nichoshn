@@ -77,33 +77,36 @@ export default {
                     .finally(() => commit('SET_PROCESSING', false))
             })
         },
-        ADD_TO_BASKET({commit, getters}, payload) {
+         ADD_TO_BASKET({commit, dispatch}, payload) {
             commit('SET_PROCESSING', true)
-            let raw = JSON.stringify({
-                productId: payload,
-                uid: getters.user.uid,
-            })
-            let url = 'http://localhost/user/fillBasket.php'
-            let requestOptions = {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: raw,
-            }
-             fetch(url, requestOptions)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.status.toString() === 'ok'){
-                       console.log("успех")
-                    }
-                    if (result.status.toString() === 'error'){
-                        commit('SET_ERROR', result.message)
-                    }
+             dispatch('GET_ID_TOKEN').then(async token => {
+                let raw = JSON.stringify({
+                    jwt: token,
+                    productId: payload.id,
+                    selectedSize: payload.selectedSize
                 })
-                .catch(error =>  commit('SET_ERROR', error))
-                .finally(() => commit('SET_PROCESSING', false))
+                let url = 'http://localhost/user/fillBasket.php'
+                let requestOptions = {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: raw,
+                }
+                fetch(url, requestOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status.toString() === 'ok') {
+                            console.log("успех")
+                        }
+                        if (result.status.toString() === 'error') {
+                            commit('SET_ERROR', result.message)
+                        }
+                    })
+                    .catch(error => commit('SET_ERROR', error))
+                    .finally(() => commit('SET_PROCESSING', false))
+            })
         },
         ADD_PRODUCTS_REF({commit}, payload){
             commit('ADD_PRODUCTS_REF', payload)

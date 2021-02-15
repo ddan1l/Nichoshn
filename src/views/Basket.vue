@@ -114,12 +114,12 @@
             </v-row>
           </v-window-item>
           <v-window-item style="position: relative; z-index: 4" :value="2">
-              <v-btn text class="mb-10 mt-6 px-8 ml-12 back" @click="step = 1">
-                <v-icon size="24" class="mr-4">
-                  fas fa-long-arrow-alt-left
-                </v-icon>
-                Назад
-              </v-btn>
+            <v-btn text class="mb-10 mt-6 px-8 ml-12 back" @click="step = 1">
+              <v-icon size="24" class="mr-4">
+                fas fa-long-arrow-alt-left
+              </v-icon>
+              Назад
+            </v-btn>
             <v-row class="px-12">
               <v-col sm="12">
                 <v-card class="mb-6 px-8 pt-6 pb-4 ">
@@ -128,7 +128,7 @@
                 </v-card>
               </v-col>
               <v-col class="" sm="12">
-                <v-card class="mb-10 px-8 pt-6 pb-4 ">
+                <v-card class="mb-6  px-8 pt-6 pb-4 ">
                   <h1 class="deliveryHeader mb-4">Доставка</h1>
                   <p class="deliveryText mb-7">Введите данные доставки</p>
                   <v-row>
@@ -177,21 +177,33 @@
                     <v-col class="mb-5" sm="12">
                       <v-select
                           filled
-
                           hide-details
                           single-line
                           color="black"
                           :items="Warehouses"
-
                           label="Выберите отделение"
                       ></v-select>
                     </v-col>
                   </v-row>
                 </v-card>
               </v-col>
-
-
-
+              <v-col sm="12">
+                <v-card class="mb-6  px-8 pt-6 pb-4">
+                  <h1 class="deliveryHeader mb-4">Оплата</h1>
+                  <v-radio-group v-model="payment">
+                    <v-radio
+                        class="radio"
+                        label="Оплата при получении"
+                        :value="0"
+                    ></v-radio>
+                    <v-radio
+                        class="radio"
+                        label="Оплата онлайн"
+                        :value="1"
+                    ></v-radio>
+                  </v-radio-group>
+                </v-card>
+              </v-col>
             </v-row>
           </v-window-item>
         </v-window>
@@ -208,6 +220,7 @@ export default {
   data(){
     return{
       code: 0,
+      payment: '',
       fetchedBasket: [],
       step: 2,
       scrollArrowVisibility: false,
@@ -393,6 +406,9 @@ export default {
 </script>
 
 <style scoped>
+.radio label {
+  top: 0 !important;
+}
 .v-label.v-label--active.theme--light {
   font-weight: 400;
 }

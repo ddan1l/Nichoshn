@@ -1,17 +1,17 @@
 <template>
   <v-container  class="mt-7 px-0">
     <div style="justify-content: center; display: flex; align-items: center">
-      <v-card ref="categoryImage"  elevation="20"  class="categoryImage rounded-r-0" height="450" width="270">
+      <v-card ref="categoryImage"  elevation="1"  class="categoryImage rounded-r-0" height="450" width="270">
         <v-img v-if="categoriesLoaded" height="450" :src="categories[activeIndex].image"></v-img>
       </v-card>
-      <v-card ref="categories" style="z-index: 2" class="py-5 categories" elevation="20" height="500" width="350">
+      <v-card ref="categories" style="z-index: 2" class="py-5 categories" elevation="1" height="500" width="350">
         <div :ref="`categoryItem${index}`" class="title categoryItem mb-2 font-weight-regular text-center text-uppercase"
              :key="index" v-for="(item, index) in categories"
              @click="changeCategory(index)">
           {{item.category}}
         </div>
       </v-card>
-      <v-card style="display: flex; flex-direction: column; align-items: center; justify-content: center" ref="categoryDescription" elevation="20" class="categoryDescription rounded-l-0  px-8" height="450" width="270">
+      <v-card style="display: flex; flex-direction: column; align-items: center; justify-content: center" ref="categoryDescription" elevation="1" class="categoryDescription rounded-l-0  px-8" height="450" width="270">
           <div class="title text-uppercase text-center mb-3">Описание</div>
           <div v-if="categoriesLoaded" class="text-center subtitle-1">{{categories[activeIndex].description}}</div>
           <v-btn v-if="categoriesLoaded" height="40" :to="'/categories/'+categories[activeIndex].categoryURL" width="200" class="mt-5" outlined>Перейти</v-btn>
