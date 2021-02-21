@@ -17,7 +17,7 @@
             <v-row  data-aos="fade-up"  v-if="products.length <= 0 && !processing" class="fill-height ma-0 notFound" align="center" justify="center">
                   Ничего не найдено ...
             </v-row>
-            <v-container  v-scroll="handleScroll" class="px-0">
+            <v-container v-scroll="handleScroll" class="px-0">
               <v-row class="pt-4">
                 <v-col class="mb-10 ml-2" sm="12">
                     <div v-if="categoryInfo.category" data-aos="fade-up"  class="categoryTitle">{{categoryInfo.category}}</div>
@@ -25,7 +25,10 @@
                 <v-col sm="12">
                   <v-row v-if="products.length>0">
                     <v-col v-product-ref  class="px-5" data-aos="fade-up" sm="4" :key="index" v-for="(product, index) in products">
-                      <v-card :style="{background: createBackground(index)}" @click="modalProduct = product; dialog = true" style="cursor: pointer" elevation="1" class="px-5 pb-0 pt-6 rounded-0" width="100%" >
+                                      <!--  @click="modalProduct = product; dialog = true-->
+                      <v-card :style="{background: createBackground(index)}"
+                              :to="{ name: 'Product', params: { categoryURL: product.categoryURL, productURL: product.url, product: product}}"
+                              style="cursor: pointer; overflow: hidden" elevation="1" class=" pb-0 rounded-0" width="100%" >
                         <v-img min-height="250" @mouseenter="increaseImage"  @mouseleave="decreaseImage" :src="product.images[0].imageURL">
                           <template v-slot:placeholder>
                             <v-row class="fill-height ma-0" align="center" justify="center">

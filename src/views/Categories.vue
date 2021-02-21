@@ -11,7 +11,8 @@
           {{item.category}}
         </div>
       </v-card>
-      <v-card style="display: flex; flex-direction: column; align-items: center; justify-content: center" ref="categoryDescription" elevation="1" class="categoryDescription rounded-l-0  px-8" height="450" width="270">
+      <v-card style="display: flex; flex-direction: column; align-items: center; justify-content: center"
+              ref="categoryDescription" elevation="1" class="categoryDescription rounded-l-0  px-8" height="450" width="270">
           <div class="title text-uppercase text-center mb-3">Описание</div>
           <div v-if="categoriesLoaded" class="text-center subtitle-1">{{categories[activeIndex].description}}</div>
           <v-btn v-if="categoriesLoaded" height="40" :to="'/categories/'+categories[activeIndex].categoryURL" width="200" class="mt-5" outlined>Перейти</v-btn>

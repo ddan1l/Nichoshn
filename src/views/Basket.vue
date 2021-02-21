@@ -11,7 +11,7 @@
           <h1 class="px-12 py-3 black--text font-weight-medium ma-0">{{currentTitle}}</h1>
         </div>
         <v-window v-model="step">
-          <v-window-item  :value="1">
+          <v-window-item :value="1">
             <v-row class="pt-6 px-10" style="position: relative; z-index: 2;">
               <v-col sm="7">
                 <v-row class="pr-8 pl-6">
@@ -20,7 +20,7 @@
                       Изображение
                     </div>
                   </v-col>
-                  <v-col  class="header"  sm="7">
+                  <v-col  class="header" sm="7">
                     <div data-aos="fade-right" class="headerContent">
                       Информация
                     </div>
@@ -45,36 +45,39 @@
             <v-row class="px-10 pt-2">
               <v-col sm="7">
                 <v-list color="transparent" style="z-index: 2; position:relative;" nav dense>
-                  <v-list-item data-aos="zoom-in"  @mouseenter="activeId = index" @mouseleave="activeId = null" class="productListItem mb-8 px-0 " v-for="(item, index) in fetchedBasket" :key="index">
-                    <v-card  style="transition: .3s; width: 100%" :elevation="activeId !== null && activeId === index ? 4 : 2" class="px-4 pr-6 rounded-lg">
-                      <v-row>
-                        <transition name="remove">
-                          <v-btn v-if="activeId !== null && activeId === index"  class="removeItem" icon width="35" height="35">
-                            <v-icon size="25" color="black">fas fa-times</v-icon>
-                          </v-btn>
-                        </transition>
-                        <v-col data-aos="zoom-in" sm="3" style="display: flex; justify-content: center" >
-                          <v-img  data-aos="zoom-in"  :src="item.images[0].imageURL"></v-img>
-                        </v-col>
-                        <v-col sm="7">
-                          <div class="product px-4 py-5 productInfo">
-                            <p class="productTitle">Футболка</p>
-                            <p class="selectedSize">Материалы: <span>100% саржа</span></p>
-                            <p class="selectedSize">Цвет: <span>Черно-белый</span></p>
-                            <p class="selectedSize mb-0">Выбранный размер: <span>XXL</span></p>
-                          </div>
-                        </v-col>
-                        <v-col sm="2">
-                          <div data-aos="zoom-in" class="product">
-                            <div class="productPrice mt-1 mb-3">
-                              <span v-if="item.discount" class="discount">{{item.price}}</span>
-                              {{item.totalPrice}} ₴
+                  <transition-group name="basket" tag="div">
+                    <v-list-item @mouseenter="activeId = index" @mouseleave="activeId = null"
+                                 class="productListItem mb-8 px-0 " v-for="(item, index) in fetchedBasket" :key="index">
+                      <v-card  style="transition: .3s; width: 100%" :elevation="activeId !== null && activeId === index ? 4 : 2" class="px-4 pr-6 rounded-lg">
+                        <v-row>
+                          <transition name="remove">
+                            <v-btn @click="removeItem(index, item)" v-if="activeId !== null && activeId === index"  class="removeItem" icon width="35" height="35">
+                              <v-icon size="25" color="black">fas fa-times</v-icon>
+                            </v-btn>
+                          </transition>
+                          <v-col data-aos="zoom-in" sm="3" style="display: flex; justify-content: center" >
+                            <v-img  data-aos="zoom-in" :src="item.images[0].imageURL"></v-img>
+                          </v-col>
+                          <v-col sm="7">
+                            <div class="product px-4 py-5 productInfo">
+                              <p class="productTitle">{{item.id}} / {{index}}</p>
+                              <p class="selectedSize">Материалы: <span>100% саржа</span></p>
+                              <p class="selectedSize">Цвет: <span>Черно-белый</span></p>
+                              <p class="selectedSize mb-0">Выбранный размер: <span>XXL</span></p>
                             </div>
-                          </div>
-                        </v-col>
-                      </v-row>
-                    </v-card>
-                  </v-list-item>
+                          </v-col>
+                          <v-col sm="2">
+                            <div data-aos="zoom-in" class="product">
+                              <div class="productPrice mt-1 mb-3">
+                                <span v-if="item.discount" class="discount">{{item.price}}</span>
+                                {{item.totalPrice}} ₴
+                              </div>
+                            </div>
+                          </v-col>
+                        </v-row>
+                      </v-card>
+                    </v-list-item>
+                  </transition-group>
                 </v-list>
               </v-col>
               <v-col class="total  mt-2 mb-10">
@@ -99,7 +102,7 @@
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
-                  <v-btn block class="rounded-0 " @click="step = 2" dark color="red accent-4" height="55">
+                  <v-btn :color="fetchedBasket.length <= 0 ? 'grey lighten-1' : ' red accent-4'"  block class="rounded-0 " @click=" fetchedBasket.length <= 0 ? undefined : step = 2" dark  height="55">
                     Перейти к оформлению
                     <v-icon  size="15" class="ml-2">fas fa-chevron-right</v-icon>
                   </v-btn>
@@ -222,7 +225,7 @@ export default {
       code: 0,
       payment: '',
       fetchedBasket: [],
-      step: 2,
+      step: 1,
       scrollArrowVisibility: false,
       activeId: null,
       currentScrollY: 0,
@@ -239,13 +242,26 @@ export default {
 
   created() {
     AOS.init()
-    this.$store.dispatch('LOAD_BASKET').then(()=>{
-      for (const productId of this.basket){
-        this.fetchProduct(productId)
-      }
-    })
+    this.getBasket()
   },
   methods:{
+    getBasket(){
+      this.fetchedBasket = []
+      this.$store.dispatch('LOAD_BASKET').then(()=>{
+        for (const item of Object.values(this.basket)){
+          this.fetchProduct(item.product)
+        }
+      })
+    },
+    removeItem(index, item){
+    //  this.fetchedBasket.splice(index, 1)
+      this.$store.dispatch('REMOVE_FROM_BASKET', {
+        productId: item.id
+      }).then(() => {
+        this.getBasket()
+      })
+
+    },
     getOffset(el) {
       const rect = el.getBoundingClientRect();
       return {
@@ -268,32 +284,11 @@ export default {
       })
     },
      fetchProduct(id){
-       let raw = JSON.stringify({
-         id: id,
-       })
-       let url = 'http://localhost/user/getProductById.php'
-       let requestOptions = {
-         method: 'POST',
-         mode: 'cors',
-         headers: {
-           'Content-Type': 'application/json'
-         },
-         body: raw,
-       }
-       fetch(url, requestOptions)
-           .then(response => response.json())
-           .then(result => {
-             if (result.status.toString() === 'OK'){
-                 this.fetchedBasket.push(result.data)
-             }
-             if (result.status.toString() === 'ERROR'){
-               this.$store.commit('SET_ERROR', result.message)
-             }
-           })
-           .catch(error =>  this.$store.commit('SET_ERROR', error))
-           .finally(() => this.$store.commit('SET_PROCESSING', false))
-       },
-      getWarehouses(v){
+        this.$store.dispatch('GET_PRODUCT_BY_ID', {id: id}).then(product => {
+          this.fetchedBasket.push(product)
+        })
+     },
+     getWarehouses(v){
       this.Warehouses = []
       let cityRef = null
       for (const value of this.Addresses){
@@ -317,14 +312,14 @@ export default {
           },
           body: JSON.stringify(data)
         })
-            .then(response => response.json())
-            .then(result => {
-              let items = []
-              for (const warehouse of result.data ){
-                items.push(warehouse.Description)
-              }
-              this.Warehouses = items
-            })
+        .then(response => response.json())
+        .then(result => {
+          let items = []
+          for (const warehouse of result.data ){
+            items.push(warehouse.Description)
+          }
+          this.Warehouses = items
+        })
       }
 
     },
@@ -389,9 +384,7 @@ export default {
       return this.$store.getters.getProcessing
     },
     basket(){
-      return this.$store.getters.basket.map(item =>{
-        return item.product
-      })
+      return this.$store.getters.basket
     }
   },
   watch: {
@@ -406,6 +399,10 @@ export default {
 </script>
 
 <style scoped>
+.basket-move {
+  transition: transform 1s;
+}
+
 .radio label {
   top: 0 !important;
 }

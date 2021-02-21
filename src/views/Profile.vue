@@ -56,7 +56,8 @@ export default {
     isAuthenticated(){
       return this.$store.getters.isAuthenticated
     },
-  }
+  },
+
 }
 </script>
 

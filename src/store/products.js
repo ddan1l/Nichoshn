@@ -3,11 +3,11 @@ export default {
     state:{
         products: [],
         filters: [],
-        wishlist: [],
         basket: [],
         productsCount: 0,
         viewedCount: 0,
-        productRefs: []
+        productRefs: [],
+        productAdded: false
     },
     mutations:{
         shuffleProducts(state, payload) {
@@ -30,9 +30,6 @@ export default {
             state.productRefs = []
             state.viewedCount = 0
         },
-        ADD_TO_WISHLIST(state, payload){
-            state.wishlist.push(payload)
-        },
         REMOVE_FROM_WISHLIST(state, payload){
             for(let i = 0; i < state.wishlist.length; i++){
                 if (state.wishlist[i] === payload) {
@@ -45,7 +42,7 @@ export default {
         },
         SET_BASKET(state, payload){
             state.basket = payload
-        }
+        },
     },
     actions: {
         async LOAD_BASKET({commit, dispatch}){
@@ -77,12 +74,12 @@ export default {
                     .finally(() => commit('SET_PROCESSING', false))
             })
         },
-         ADD_TO_BASKET({commit, dispatch}, payload) {
-            commit('SET_PROCESSING', true)
+        ADD_TO_BASKET({commit, dispatch, state}, payload) {
+             commit('SET_PROCESSING', true)
              dispatch('GET_ID_TOKEN').then(async token => {
                 let raw = JSON.stringify({
                     jwt: token,
-                    productId: payload.id,
+                    productId: payload.productId,
                     selectedSize: payload.selectedSize
                 })
                 let url = 'http://localhost/user/fillBasket.php'
@@ -97,16 +94,51 @@ export default {
                 fetch(url, requestOptions)
                     .then(response => response.json())
                     .then(result => {
-                        if (result.status.toString() === 'ok') {
+                        if (result.status.toString() === 'OK') {
+                            state.productAdded = !state.productAdded
                             console.log("успех")
                         }
-                        if (result.status.toString() === 'error') {
+                        if (result.status.toString() === 'ERROR') {
                             commit('SET_ERROR', result.message)
                         }
                     })
                     .catch(error => commit('SET_ERROR', error))
                     .finally(() => commit('SET_PROCESSING', false))
             })
+        },
+        REMOVE_FROM_BASKET({commit, dispatch}, payload) {
+            return new Promise(resolve => {
+                commit('SET_PROCESSING', true)
+                dispatch('GET_ID_TOKEN').then(async token => {
+                    let raw = JSON.stringify({
+                        jwt: token,
+                        productId: payload.productId,
+                    })
+                    let url = 'http://localhost/user/easeBasket.php'
+                    let requestOptions = {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: raw,
+                    }
+
+                    fetch(url, requestOptions)
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.status.toString() === 'OK') {
+                                resolve()
+                            }
+                            if (result.status.toString() === 'ERROR') {
+                                commit('SET_ERROR', result.message)
+                            }
+                        })
+                        .catch(error => commit('SET_ERROR', error))
+                        .finally(() => commit('SET_PROCESSING', false))
+                })
+            })
+
         },
         ADD_PRODUCTS_REF({commit}, payload){
             commit('ADD_PRODUCTS_REF', payload)
@@ -122,7 +154,7 @@ export default {
             });
             await promise;
         },
-       async GET_FILTERS({commit}, payload){
+        async GET_FILTERS({commit}, payload){
            commit('SET_PROCESSING', true)
            let raw = JSON.stringify({
                categoryURL: payload.categoryURL,
@@ -221,27 +253,69 @@ export default {
                     commit('SET_PROCESSING', false)
                 })*/
         },
-        FIND_PRODUCT({commit, getters}, payload){
+        GET_PRODUCT_BY_ID({commit}, payload){
             commit('SET_PROCESSING', true)
-            commit('CLEAR_ERROR')
-            setTimeout(()=>{
-                let isExists = false
-                for (let product of getters.getClothing){
-                    if (product.url === payload.url){
-                        isExists = true
-                        commit('SET_PRODUCT', product)
-                        commit('SET_PROCESSING', false)
-                        break
-                    }
+            return new Promise(resolve => {
+                let raw = JSON.stringify({
+                    id: payload.id,
+                })
+                let url = 'http://localhost/user/getProductById.php'
+                let requestOptions = {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: raw,
                 }
-                if (!isExists){
-                    commit('SET_PROCESSING', false)
-                    commit('SET_ERROR', 'Продукт не найден')
+                fetch(url, requestOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status.toString() === 'OK'){
+                           resolve(result.data)
+                        }
+                        if (result.status.toString() === 'ERROR'){
+                            this.$store.commit('SET_ERROR', result.message)
+                        }
+                    })
+                    .catch(error =>  this.$store.commit('SET_ERROR', error))
+                    .finally(() => this.$store.commit('SET_PROCESSING', false))
+            })
+        },
+        GET_PRODUCT_BY_URL({commit}, payload){
+            commit('SET_PROCESSING', true)
+            return new Promise(resolve => {
+                let raw = JSON.stringify({
+                    url: payload.url,
+                })
+                let url = 'http://localhost/user/getProductByUrl.php'
+                let requestOptions = {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: raw,
                 }
-            }, 100)
+                fetch(url, requestOptions)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status.toString() === 'OK'){
+                            resolve(result.data)
+                        }
+                        if (result.status.toString() === 'ERROR'){
+                            this.$store.commit('SET_ERROR', result.message)
+                        }
+                    })
+                    .catch(error =>  this.$store.commit('SET_ERROR', error))
+                    .finally(() => this.$store.commit('SET_PROCESSING', false))
+            })
         }
     },
     getters:{
+        productAdded: state => {
+            return state.productAdded
+        },
         basket: state =>{
             return state.basket
         },
@@ -261,32 +335,5 @@ export default {
             return state.filters
         },
 
-        getWishList: (state)=>{
-          return state.wishlist
-        },
-        getProduct: (state) =>{
-            return state.product
-        },
-        getClothing: (state) =>{
-            return state.clothing
-        },
-        getCategoriesInfo: (state) => {
-            return state.categoriesInfo
-        },
-        getClothingCategories: (state) => {
-          let clothingCategories = []
-           state.clothing.forEach(article=>{
-               clothingCategories.push({
-                   category: article.category,
-                   categoryURL: article.categoryURL
-               })
-           })
-            clothingCategories = clothingCategories.filter((categoryInfo, index, self) =>
-                index === self.findIndex((c) => (
-                     c.categoryURL === categoryInfo.categoryURL
-                ))
-            )
-          return clothingCategories
-        },
     }
 }
