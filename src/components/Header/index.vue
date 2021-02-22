@@ -5,7 +5,7 @@
         <v-menu offset-y open-on-hover>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-                class="text-capitalize"
+                class="text-capitalize py-5"
                 color="grey"
                 dark
                 text
@@ -41,43 +41,43 @@
     </div>
     <div class="middleContainer">
       <div>
-        <v-btn class="text-capitalize middleBtn px-10 py-6"
+        <v-btn class="text-capitalize middleBtn px-10 py-8"
                color="white"
                dark
                text>
           Женищнам
         </v-btn>
-        <v-btn class="text-capitalize middleBtn px-10 py-6"
+        <v-btn class="text-capitalize middleBtn px-10 py-8"
                color="white"
                dark
                text>
           Мужчинам
         </v-btn>
-        <v-btn class="text-capitalize middleBtn px-10 py-6"
+        <v-btn class="text-capitalize middleBtn px-10 py-8"
                color="white"
                dark
                text>
           Детям
         </v-btn>
       </div>
-      <div class="logo px-10 py-2">
+      <div class="logo px-10 py-4">
         <span>Н</span>ичошный шоп
       </div>
       <div>
-        <v-btn  class="text-capitalize middleBtn px-5 py-6"
+        <v-btn  class="text-capitalize middleBtn px-5 py-8"
                color="grey"
                dark
                text>
           Войти
         </v-btn>
-        <v-btn  class="text-capitalize middleBtn px-2 py-6"
+        <v-btn  class="text-capitalize middleBtn px-2 py-8"
                 color="white"
                 dark
                 text>
          <v-icon class="mr-2" size="14">far fa-heart</v-icon>
           1
         </v-btn>
-        <v-btn  class="text-capitalize middleBtn px-2 py-6"
+        <v-btn  class="text-capitalize middleBtn px-2 py-7"
                 color="white"
                 dark
                 text>
@@ -89,42 +89,27 @@
   </div>
     <div class="bottomContainer">
       <div>
-        <v-menu offset-y open-on-hover>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-                class="text-capitalize"
-                color="grey"
-                dark
-                text
-                v-bind="attrs"
-                v-on="on"
-            >
-              Помощь
-              <v-icon size="10" class="ml-5 mt-1">fas fa-chevron-down</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-                v-for="(item, index) in items"
-                :key="index"
-            >
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <v-btn class="text-capitalize"
-               color="grey"
-               dark
-               text>Контакты</v-btn>
-        <v-btn class="text-capitalize"
-               color="grey"
-               dark
-               text>Магазины</v-btn>
+        <v-btn class="text-capitalize px-10 py-8" color="black" dark text>
+          Одежда
+        </v-btn>
+        <v-btn class="text-capitalize px-7 py-8" color="black" dark text>
+          Обувь
+        </v-btn>
+        <v-btn class="text-capitalize px-7 py-8" color="black" dark text>
+          Аксессуары
+        </v-btn>
+        <v-btn class="text-capitalize px-7 py-8" color="black" dark text>
+          Белье
+        </v-btn>
+        <v-btn class="text-capitalize px-7 py-8" color="black" dark text>
+          Дизайнеры
+        </v-btn>
+        <v-btn class="text-capitalize px-7 py-8" color="red" dark text>
+          Sale
+        </v-btn>
+
       </div>
-      <v-btn class="text-capitalize"
-             color="grey"
-             dark
-             text>044 365 94 94</v-btn>
+
     </div>
   </div>
 <!--  <div v-scroll="handleScroll">
@@ -377,7 +362,10 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.logo span{
+/deep/.v-btn{
+  border-radius: 0 !important;
+}
+/*.logo span{
   color: #232323;
   position: relative;
 }
@@ -391,7 +379,7 @@ export default {
   height: 100%;
   background-color: #ffffff;
   z-index: -1;
-}
+}*/
 .logo{
   color: white;
   font-family: 'Montserrat', sans-serif;
@@ -407,6 +395,9 @@ export default {
 }
 /deep/.v-icon__component.theme--dark {
   fill: white;
+}
+.bottomContainer {
+  border-bottom: 1px solid #eee;
 }
 
 /*

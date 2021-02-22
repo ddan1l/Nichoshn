@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <app-header></app-header>
-      <v-content class="mt-6">
+      <v-content>
 <!--        <transition
             @enter="enter"
             @leave="leave"
